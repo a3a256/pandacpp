@@ -72,15 +72,13 @@ void DataFrame::head(int l = 5){
     line.pop_back();
     line += '\n';
     limiter = std::min(l, (int)df[columns[0]].size());
-    for(i=0; i<columns.size(); i++){
-        for(j=0; j<limiter; j++){
-            if(df[columns[i]][j].size() < biggest_size){
-                diff = biggest_size - df[columns[i]][j].size();
-            }
+    for(i=0; i<limiter; i++){
+        for(j=0; j<columns.size(); j++){
+            diff = biggest_size - df[columns[j]][i].size();
             for(pad=0; pad<diff; pad++){
                 line += ' ';
             }
-            line += df[columns[i]][j] + ' ';
+            line += df[columns[j]][i] + ' ';
         }
         line.pop_back();
         line += '\n';
