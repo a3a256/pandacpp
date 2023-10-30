@@ -17,6 +17,8 @@ class DataFrame{
 
         void read_csv(std::string path, char delimeter);
 
+        void to_csv(std::string path);
+
         void to_df();
 
         void head(int l);
@@ -84,4 +86,25 @@ void DataFrame::head(int l = 5){
         line += '\n';
     }
     std::cout << line;
+}
+
+void DataFrame::to_csv(std::string path){
+    std::fstream fout;
+    fout.open(path, std::ios::out | std::ios::app);
+    int i, j, len;
+    for(i=0; i<columns.size(); i++){
+        fout << columns[i] << ';';
+    }
+    fout << '\n';
+    len = df[columns[0]].size();
+    for(i=0; i<len-1; i++){
+        for(j=0; j<columns.size()-1; j++){
+            fout << df[columns[j]][i] << ';';
+        }
+        fout << df[columns[j]][i] << '\n';
+    }
+    for(j=0; j<columns.size()-1; j++){
+        fout << df[columns[j]][i] << ';';
+    }
+    fout << df[columns[j]][i];
 }
