@@ -22,6 +22,8 @@ class DataFrame{
         void to_df();
 
         void head(int l);
+
+        void drop_column(int index);
 };
 
 void DataFrame::read_csv(std::string path, char delimeter = ';'){
@@ -62,9 +64,7 @@ void DataFrame::head(int l = 5){
         }
     }
     for(i=0; i<columns.size(); i++){
-        if(columns[i].size() < biggest_size){
-            diff = biggest_size - columns[i].size();
-        }
+        diff = biggest_size - columns[i].size();
         for(pad = 0; pad<diff; pad++){
             line += ' ';
         }
@@ -107,4 +107,12 @@ void DataFrame::to_csv(std::string path){
         fout << df[columns[j]][i] << ';';
     }
     fout << df[columns[j]][i];
+}
+
+void DataFrame::drop_column(int index){
+    if(index >= df.size()){
+        throw std::invalid_argument("Column index is out of range\n");
+    }
+    df.erase(columns[index]);
+    columns.erase(columns.begin()+index);
 }
