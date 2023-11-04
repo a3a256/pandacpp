@@ -24,6 +24,8 @@ class DataFrame{
         void head(int l);
 
         void drop_column(int index);
+
+        void rename_columns(std::map<std::string, std::string> dict);
 };
 
 void DataFrame::read_csv(std::string path, char delimeter = ';'){
@@ -115,4 +117,20 @@ void DataFrame::drop_column(int index){
     }
     df.erase(columns[index]);
     columns.erase(columns.begin()+index);
+}
+
+void DataFrame::rename_columns(std::map<std::string, std::string> dict){
+    int index, i;
+    for(auto it: dict){
+        if(df.find(it.first) != df.end()){
+            df[it.second] = df[it.first];
+            for(i=0; i<columns.size(); i++){
+                if(columns[i] == it.first){
+                    index = i;
+                }
+            }
+            columns.insert(columns.begin()+index, it.second);
+            drop_column(index+1);
+        }
+    }
 }
