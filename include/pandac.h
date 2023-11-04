@@ -13,9 +13,10 @@
 class DataFrame{
     public:
         std::map<std::string, std::vector<std::string>> df;
+        std::map<std::string, std::vector<float>> df_e;
         std::vector<std::string> columns;
 
-        void read_csv(std::string path, char delimeter);
+        void read_csv(std::string path, char delimeter, int head, std::vector<std::string> cols);
 
         void to_csv(std::string path);
 
@@ -26,9 +27,20 @@ class DataFrame{
         void drop_column(int index);
 
         void rename_columns(std::map<std::string, std::string> dict);
+
+
+    private:
+
+        void internal_append_row(std::stringstream &s, std::string word, char delim){
+            int col = 0;
+            while(std::getline(s, word, delim)){
+                df[columns[col]].push_back(word);
+                col++;
+            }
+        }
 };
 
-void DataFrame::read_csv(std::string path, char delimeter = ';'){
+void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, std::vector<std::string> cols = {}){
     std::ifstream fan(path);
     if(!fan.is_open()){
         throw std::invalid_argument("Path or directory does not exist\n");
@@ -36,19 +48,26 @@ void DataFrame::read_csv(std::string path, char delimeter = ';'){
     std::fstream fin;
     fin.open(path, std::ios::in);
     std::string line, word;
-    int index = 0, col;
+    int index = 0;
     while(std::getline(fin, line)){
         std::stringstream s(line);
-        if(index == 0){
+        if(index == head){
             while(std::getline(s, word, delimeter)){
                 columns.push_back(word);
             }
-        }else{
-            col = 0;
-            while(std::getline(s, word, delimeter)){
-                df[columns[col]].push_back(word);
-                col++;
+            if(cols.size() != 0){
+                if(cols.size() == columns.size()){
+                    std::vector<std::string>().swap(columns);
+                    for(std::string col: cols){
+                        columns.push_back(col);
+                    }
+                    internal_append_row(s, word, delimeter);
+                }else{
+                    throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
+                }
             }
+        }else if(index > head){
+            internal_append_row(s, word, delimeter);
         }
         index++;
     }
@@ -121,6 +140,7 @@ void DataFrame::drop_column(int index){
 
 void DataFrame::rename_columns(std::map<std::string, std::string> dict){
     int index, i;
+    std::string error_line = "Column ";
     for(auto it: dict){
         if(df.find(it.first) != df.end()){
             df[it.second] = df[it.first];
@@ -131,6 +151,9 @@ void DataFrame::rename_columns(std::map<std::string, std::string> dict){
             }
             columns.insert(columns.begin()+index, it.second);
             drop_column(index+1);
+        }else{
+            error_line += it.first + " not found in range\n";
+            throw std::invalid_argument(error_line);
         }
     }
 }
