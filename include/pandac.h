@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <algorithm>
 #include <limits.h>
+#include <ios>
+#include <stdlib.h>
 
 
 class DataFrame{
@@ -28,6 +30,8 @@ class DataFrame{
 
         void rename_columns(std::map<std::string, std::string> dict);
 
+        void convert_df();
+
 
     private:
 
@@ -37,6 +41,27 @@ class DataFrame{
                 df[columns[col]].push_back(word);
                 col++;
             }
+        }
+
+        bool check_float(std::string value){
+            std::istringstream iss(value);
+            float f;
+            iss >> std::noskipws >> f;
+
+            return iss.eof() && !iss.fail();
+        }
+
+        std::string is_df_convertible(){
+            std::string error_cols = "";
+            for(auto it: df){
+                for(std::string val: it.second){
+                    if(!check_float(val)){
+                        error_cols += "Column " + it.first + " not convertible\n";
+                        break;
+                    }
+                }
+            }
+            return error_cols;
         }
 };
 
@@ -154,6 +179,18 @@ void DataFrame::rename_columns(std::map<std::string, std::string> dict){
         }else{
             error_line += it.first + " not found in range\n";
             throw std::invalid_argument(error_line);
+        }
+    }
+}
+
+void DataFrame::convert_df(){
+    std::string convertible = is_df_convertible();
+    if(convertible.size() != 0){
+        throw std::invalid_argument(convertible);
+    }
+    for(auto it: df){
+        for(std::string val: it.second){
+            df_e[it.first].push_back(std::stof(val));
         }
     }
 }
