@@ -10,6 +10,7 @@
 #include <limits.h>
 #include <ios>
 #include <stdlib.h>
+#include <set>
 
 
 class DataFrame{
@@ -17,6 +18,8 @@ class DataFrame{
         std::map<std::string, std::vector<std::string>> df;
         std::map<std::string, std::vector<float>> df_e;
         std::vector<std::string> columns;
+        std::map<std::string, std::map<std::string, std::string>> encoder;
+        std::map<std::string, std::map<std::string, std::string>> decoder;
 
         void read_csv(std::string path, char delimeter, int head, std::vector<std::string> cols);
 
@@ -31,6 +34,8 @@ class DataFrame{
         void rename_columns(std::map<std::string, std::string> dict);
 
         void convert_df();
+
+        void encode_categoricals(std::vector<std::string> cols);
 
 
     private:
@@ -191,6 +196,36 @@ void DataFrame::convert_df(){
     for(auto it: df){
         for(std::string val: it.second){
             df_e[it.first].push_back(std::stof(val));
+        }
+    }
+}
+
+void DataFrame::encode_categoricals(std::vector<std::string> cols){
+    int i, index;
+    std::map<std::string, std::set<std::string>> ecn;
+    for(i=0; i<cols.size(); i++){
+        if(df.find(cols[i]) != df.end()){
+            for(std::string s: df[cols[i]]){
+                ecn[cols[i]].insert(s);
+            }
+        }else{
+            std::string line = "Column " + cols[i] + " not found in scope\n";
+            throw std::invalid_argument(line);
+        }
+    }
+
+    for(auto it: ecn){
+        index = 0;
+        for(auto s: it.second){
+            encoder[it.first][s] = std::to_string(index);
+            decoder[it.first][std::to_string(index)] = s;
+            index++;
+        }
+    }
+
+    for(auto it: encoder){
+        for(i=0; i<df[it.first].size(); i++){
+            df[it.first][i] = encoder[it.first][df[it.first][i]];
         }
     }
 }
