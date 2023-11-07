@@ -11,6 +11,8 @@
 #include <ios>
 #include <stdlib.h>
 #include <set>
+#include <cstdlib>
+#include <utility>
 
 
 class DataFrame{
@@ -20,6 +22,8 @@ class DataFrame{
         std::vector<std::string> columns;
         std::map<std::string, std::map<std::string, std::string>> encoder;
         std::map<std::string, std::map<std::string, std::string>> decoder;
+
+        std::pair<int, int> shape;
 
         void read_csv(std::string path, char delimeter, int head, std::vector<std::string> cols);
 
@@ -37,6 +41,8 @@ class DataFrame{
 
         void encode_categoricals(std::vector<std::string> cols);
 
+        void unique_vals(std::string value);
+
 
     private:
 
@@ -48,7 +54,7 @@ class DataFrame{
             }
         }
 
-        bool check_float(std::string value){
+        bool check_float(std::string &value){
             std::istringstream iss(value);
             float f;
             iss >> std::noskipws >> f;
@@ -56,13 +62,25 @@ class DataFrame{
             return iss.eof() && !iss.fail();
         }
 
+        bool check_int(std::string &value){
+            // char *p;
+            // long converted = std::strtol(value, &p, 10);
+            // if(*p){
+            //     return false;
+            // }
+            // return true;
+            return !value.empty() && std::all_of(value.begin(), value.end(), ::isdigit);
+        }
+
         std::string is_df_convertible(){
             std::string error_cols = "";
             for(auto it: df){
                 for(std::string val: it.second){
                     if(!check_float(val)){
-                        error_cols += "Column " + it.first + " not convertible\n";
-                        break;
+                        if(!(check_int(val))){
+                            error_cols += it.first + " ";
+                            break;
+                        }
                     }
                 }
             }
@@ -101,6 +119,10 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
         }
         index++;
     }
+    index -= head;
+    index --;
+    shape.first = index;
+    shape.second = columns.size();
     return;
 }
 
@@ -198,6 +220,21 @@ void DataFrame::convert_df(){
             df_e[it.first].push_back(std::stof(val));
         }
     }
+}
+
+void DataFrame::unique_vals(std::string value){
+    if(df.find(value) == df.end()){
+        throw std::invalid_argument("Column not found in scope\n");
+    }
+    std::set<std::string> stk;
+    for(std::string s: df[value]){
+        stk.insert(s);
+    }
+    for(auto it: stk){
+        std::cout << it << " ";
+    }
+    std::cout << "\n";
+    std::set<std::string>().swap(stk);
 }
 
 void DataFrame::encode_categoricals(std::vector<std::string> cols){
