@@ -14,10 +14,12 @@
 #include <cstdlib>
 #include <utility>
 
+// change data from long to string immediately!!
+
 
 class DataFrame{
     public:
-        std::map<std::string, std::vector<std::string>> df;
+        std::map<std::string, std::vector<long>> df;
         std::map<std::string, std::vector<float>> df_e;
         std::vector<std::string> columns;
         std::map<std::string, std::map<std::string, std::string>> encoder;
@@ -49,7 +51,7 @@ class DataFrame{
         void internal_append_row(std::stringstream &s, std::string word, char delim){
             int col = 0;
             while(std::getline(s, word, delim)){
-                df[columns[col]].push_back(word);
+                df[columns[col]].push_back(std::stol(word));
                 col++;
             }
         }
@@ -75,12 +77,13 @@ class DataFrame{
         std::string is_df_convertible(){
             std::string error_cols = "";
             for(auto it: df){
-                for(std::string val: it.second){
+                for(long val: it.second){ // change back to std::string
                     if(!check_float(val)){
-                        if(!(check_int(val))){
-                            error_cols += it.first + " ";
-                            break;
-                        }
+                        error_cols += it.first + " ";
+                        // if(!(check_int(val))){
+                        //     error_cols += it.first + " ";
+                        //     break;
+                        // }
                     }
                 }
             }
@@ -153,7 +156,7 @@ void DataFrame::head(int l = 5){
             for(pad=0; pad<diff; pad++){
                 line += ' ';
             }
-            line += df[columns[j]][i] + ' ';
+            line += std::to_string(df[columns[j]][i]) + ' '; //change here back
         }
         line.pop_back();
         line += '\n';
@@ -230,6 +233,7 @@ void DataFrame::unique_vals(std::string value){
     for(std::string s: df[value]){
         stk.insert(s);
     }
+    std::cout << stk.size() << " size of set\n";
     for(auto it: stk){
         std::cout << it << " ";
     }
