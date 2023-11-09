@@ -19,12 +19,12 @@
 
 class DataFrame{
     public:
-        std::map<std::string, std::vector<long>> df;
+        std::map<std::string, std::vector<std::string>> df;
         std::map<std::string, std::vector<float>> df_e;
         std::vector<std::string> columns;
         std::map<std::string, std::map<std::string, std::string>> encoder;
         std::map<std::string, std::map<std::string, std::string>> decoder;
-
+        std::set<std::string> stk;
         std::pair<int, int> shape;
 
         void read_csv(std::string path, char delimeter, int head, std::vector<std::string> cols);
@@ -43,7 +43,9 @@ class DataFrame{
 
         void encode_categoricals(std::vector<std::string> cols);
 
-        void unique_vals(std::string value);
+        void unique(std::string value);
+
+        void nunique(std::string value);
 
 
     private:
@@ -51,7 +53,7 @@ class DataFrame{
         void internal_append_row(std::stringstream &s, std::string word, char delim){
             int col = 0;
             while(std::getline(s, word, delim)){
-                df[columns[col]].push_back(std::stol(word));
+                df[columns[col]].push_back(word);
                 col++;
             }
         }
@@ -76,18 +78,23 @@ class DataFrame{
 
         std::string is_df_convertible(){
             std::string error_cols = "";
+            float value;
             for(auto it: df){
-                for(long val: it.second){ // change back to std::string
-                    if(!check_float(val)){
-                        error_cols += it.first + " ";
-                        // if(!(check_int(val))){
-                        //     error_cols += it.first + " ";
-                        //     break;
-                        // }
+                for(std::string val: it.second){ // change back to std::string
+                    try{
+                        value = std::stof(val);
+                    }catch (const char* msg){
+                        return it.first + " not convertible";
                     }
                 }
             }
             return error_cols;
+        }
+
+        void unique_vals(std::string col){
+            for(int i=0; i<df[col].size(); i++){
+                stk.insert(df[col][i]);
+            }
         }
 };
 
@@ -156,7 +163,7 @@ void DataFrame::head(int l = 5){
             for(pad=0; pad<diff; pad++){
                 line += ' ';
             }
-            line += std::to_string(df[columns[j]][i]) + ' '; //change here back
+            line += df[columns[j]][i] + ' '; //change here back
         }
         line.pop_back();
         line += '\n';
@@ -225,19 +232,23 @@ void DataFrame::convert_df(){
     }
 }
 
-void DataFrame::unique_vals(std::string value){
+void DataFrame::unique(std::string value){
     if(df.find(value) == df.end()){
         throw std::invalid_argument("Column not found in scope\n");
     }
-    std::set<std::string> stk;
-    for(std::string s: df[value]){
-        stk.insert(s);
-    }
-    std::cout << stk.size() << " size of set\n";
+    std::set<std::string>().swap(stk);
+    unique_vals(value);
     for(auto it: stk){
         std::cout << it << " ";
     }
+    std::set<std::string>().swap(stk);
     std::cout << "\n";
+}
+
+void DataFrame::nunique(std::string value){
+    std::set<std::string>().swap(stk);
+    unique_vals(value);
+    std::cout << stk.size() << "\n";
     std::set<std::string>().swap(stk);
 }
 
