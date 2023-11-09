@@ -27,6 +27,8 @@ class DataFrame{
         std::set<std::string> stk;
         std::pair<int, int> shape;
 
+        bool converted = false;
+
         void read_csv(std::string path, char delimeter, int head, std::vector<std::string> cols);
 
         void to_csv(std::string path);
@@ -230,6 +232,8 @@ void DataFrame::convert_df(){
             df_e[it.first].push_back(std::stof(val));
         }
     }
+
+    converted = true;
 }
 
 void DataFrame::unique(std::string value){
