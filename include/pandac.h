@@ -37,6 +37,8 @@ class DataFrame{
 
         void head(int l);
 
+        void tail(int l);
+
         void drop_column(int index);
 
         void rename_columns(std::map<std::string, std::string> dict);
@@ -160,6 +162,41 @@ void DataFrame::head(int l = 5){
     line += '\n';
     limiter = std::min(l, (int)df[columns[0]].size());
     for(i=0; i<limiter; i++){
+        for(j=0; j<columns.size(); j++){
+            diff = biggest_size - df[columns[j]][i].size();
+            for(pad=0; pad<diff; pad++){
+                line += ' ';
+            }
+            line += df[columns[j]][i] + ' '; //change here back
+        }
+        line.pop_back();
+        line += '\n';
+    }
+    std::cout << line;
+}
+
+void DataFrame::tail(int l = 5){
+    int i, j, biggest_size, diff, pad, limiter;
+    std::string line = "";
+    biggest_size = INT_MIN;
+    for(i=0; i<columns.size(); i++){
+        biggest_size = std::max((int)columns[i].size(), biggest_size);
+        for(j=0; j<df[columns[i]].size(); j++){
+            biggest_size = std::max((int)df[columns[i]][j].size(), biggest_size);
+        }
+    }
+    for(i=0; i<columns.size(); i++){
+        diff = biggest_size - columns[i].size();
+        for(pad = 0; pad<diff; pad++){
+            line += ' ';
+        }
+        line += columns[i];
+        line += ' ';
+    }
+    line.pop_back();
+    line += '\n';
+    limiter = std::min(l, (int)df[columns[0]].size());
+    for(i=df[columns[0]].size()-limiter; i<df[columns[0]].size(); i++){
         for(j=0; j<columns.size(); j++){
             diff = biggest_size - df[columns[j]][i].size();
             for(pad=0; pad<diff; pad++){
