@@ -27,6 +27,9 @@ class DataFrame{
         std::set<std::string> stk;
         std::pair<int, int> shape;
 
+        std::vector<std::vector<std::string>> val_string;
+        std::vector<std::vector<float>> val_float;
+
         bool converted = false;
 
         void read_csv(std::string path, char delimeter, int head, std::vector<std::string> cols);
@@ -50,6 +53,8 @@ class DataFrame{
         void unique(std::string value);
 
         void nunique(std::string value);
+
+        void sort_by(std::string column);
 
 
     private:
@@ -321,4 +326,23 @@ void DataFrame::encode_categoricals(std::vector<std::string> cols){
             df[it.first][i] = encoder[it.first][df[it.first][i]];
         }
     }
+}
+
+void DataFrame::sort_by(std::string column){
+    if(df.find(column) == df.end()){
+        std::string error_line = column + " is not found in the range\n";
+        throw std::invalid_argument(error_line);
+    }
+
+    std::vector<std::vector<std::string>> vals_extracted;
+    std::vector<std::string> temp;
+    int i, j;
+    for(i=0; i<df[columns[0]].size(); i++){
+        for(j=0; j<columns.size(); j++){
+            temp.push_back(df[columns[j]][i]);
+        }
+        vals_extracted.push_back(temp);
+        std::vector<std::string>().swap(temp);
+    }
+    std::sort();
 }
