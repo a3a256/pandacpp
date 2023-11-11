@@ -336,13 +336,29 @@ void DataFrame::sort_by(std::string column){
 
     std::vector<std::vector<std::string>> vals_extracted;
     std::vector<std::string> temp;
-    int i, j;
+    int i, j, col_index = 0;
     for(i=0; i<df[columns[0]].size(); i++){
         for(j=0; j<columns.size(); j++){
+            if(columns[j] == column){
+                col_index = j
+;            }
             temp.push_back(df[columns[j]][i]);
         }
         vals_extracted.push_back(temp);
         std::vector<std::string>().swap(temp);
     }
-    std::sort();
+
+    bool sorted = false;
+    while(!sorted){
+        sorted = true;
+        for(i=1; i<vals_extracted.size(); i++){
+            if(vals_extracted[i][col_index] < vals_extracted[i-1][col_index]){
+                sorted = false;
+                temp = vals_extracted[i];
+                vals_extracted[i] = vals_extracted[i-1];
+                vals_extracted[i-1] = temp;
+            }
+        }
+    }
+    std::vector<std::string>().swap(temp);
 }
