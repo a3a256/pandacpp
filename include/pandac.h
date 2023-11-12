@@ -219,10 +219,10 @@ void DataFrame::to_csv(std::string path){
     std::fstream fout;
     fout.open(path, std::ios::out | std::ios::app);
     int i, j, len;
-    for(i=0; i<columns.size(); i++){
+    for(i=0; i<columns.size()-1; i++){
         fout << columns[i] << ';';
     }
-    fout << '\n';
+    fout << columns[i] << "\n";
     len = df[columns[0]].size();
     for(i=0; i<len-1; i++){
         for(j=0; j<columns.size()-1; j++){
@@ -361,4 +361,10 @@ void DataFrame::sort_by(std::string column){
         }
     }
     std::vector<std::string>().swap(temp);
+
+    for(i=0; i<df[columns[0]].size(); i++){
+        for(j=0; j<columns.size(); j++){
+            df[columns[j]][i] = vals_extracted[i][j];
+        }
+    }
 }
