@@ -336,6 +336,8 @@ void DataFrame::sort_by(std::string column){
 
     std::vector<std::vector<std::string>> vals_extracted;
     std::vector<std::string> temp;
+    std::vector<std::vector<float>> floats_extracted;
+    std::vector<float> ftemp;
     int i, j, col_index = 0;
     for(i=0; i<df[columns[0]].size(); i++){
         for(j=0; j<columns.size(); j++){
@@ -343,9 +345,16 @@ void DataFrame::sort_by(std::string column){
                 col_index = j;            
             }
             temp.push_back(df[columns[j]][i]);
+            if(converted){
+                ftemp.push_back(df_e[columns[j]][i]);
+            }
         }
         vals_extracted.push_back(temp);
+        if(converted){
+            floats_extracted.push_back(ftemp);
+        }
         std::vector<std::string>().swap(temp);
+        std::vector<float>().swap(ftemp);
     }
 
     bool sorted = false;
@@ -357,14 +366,22 @@ void DataFrame::sort_by(std::string column){
                 temp = vals_extracted[i];
                 vals_extracted[i] = vals_extracted[i-1];
                 vals_extracted[i-1] = temp;
+                if(converted){
+                    ftemp = floats_extracted[i];
+                    floats_extracted[i] = floats_extracted[i-1];
+                    floats_extracted[i-1] = ftemp;
+                }
             }
         }
     }
     std::vector<std::string>().swap(temp);
-
+    std::vector<float>().swap(ftemp);
     for(i=0; i<df[columns[0]].size(); i++){
         for(j=0; j<columns.size(); j++){
             df[columns[j]][i] = vals_extracted[i][j];
+            if(converted){
+                df_e[columns[j]][i] = floats_extracted[i][j];
+            }
         }
     }
 }
