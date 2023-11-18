@@ -361,15 +361,22 @@ void DataFrame::sort_by(std::string column){
     while(!sorted){
         sorted = true;
         for(i=1; i<vals_extracted.size(); i++){
-            if(vals_extracted[i][col_index] < vals_extracted[i-1][col_index]){
-                sorted = false;
-                temp = vals_extracted[i];
-                vals_extracted[i] = vals_extracted[i-1];
-                vals_extracted[i-1] = temp;
-                if(converted){
+            if(converted){
+                if(floats_extracted[i][col_index] < floats_extracted[i-1][col_index]){
+                    sorted = false;
                     ftemp = floats_extracted[i];
                     floats_extracted[i] = floats_extracted[i-1];
                     floats_extracted[i-1] = ftemp;
+                    temp = vals_extracted[i];
+                    vals_extracted[i] = vals_extracted[i-1];
+                    vals_extracted[i-1] = temp;
+                }
+            }else{
+                if(vals_extracted[i][col_index] < vals_extracted[i-1][col_index]){
+                    sorted = false;
+                    temp = vals_extracted[i];
+                    vals_extracted[i] = vals_extracted[i-1];
+                    vals_extracted[i-1] = temp;
                 }
             }
         }
