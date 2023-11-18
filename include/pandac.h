@@ -340,8 +340,8 @@ void DataFrame::sort_by(std::string column){
     for(i=0; i<df[columns[0]].size(); i++){
         for(j=0; j<columns.size(); j++){
             if(columns[j] == column){
-                col_index = j
-;            }
+                col_index = j;            
+            }
             temp.push_back(df[columns[j]][i]);
         }
         vals_extracted.push_back(temp);
