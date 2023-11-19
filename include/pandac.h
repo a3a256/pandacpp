@@ -42,7 +42,7 @@ class DataFrame{
 
         void tail(int l);
 
-        void drop_column(int index);
+        void drop(int index);
 
         void rename_columns(std::map<std::string, std::string> dict);
 
@@ -54,10 +54,34 @@ class DataFrame{
 
         void nunique(std::string value);
 
-        void sort_by(std::string column);
+        void sort_by(std::string column, bool ascending = true);
 
 
     private:
+
+        void drop_col(int index=-1, std::string name = ""){
+            if(index != -1){
+                df.erase(columns[index]);
+                if(converted){
+                    df_e.erase(columns[index])
+                }
+                columns.erase(columns.begin()+index);
+            }
+
+            if(name != ""){
+                df.erase(name);
+                if(converted){
+                    df_e.erase(name);
+                }
+                int j;
+                for(j=0; j<columns.size(); j++){
+                    if(columns[j] == name){
+                        columns.erase(columns.beging()+j);
+                        break;
+                    }
+                }
+            }
+        }
 
         void internal_append_row(std::stringstream &s, std::string word, char delim){
             int col = 0;
@@ -236,7 +260,7 @@ void DataFrame::to_csv(std::string path){
     fout << df[columns[j]][i];
 }
 
-void DataFrame::drop_column(int index){
+void DataFrame::drop(std::vector<int> indices, std::vector<std::string> names){
     if(index >= df.size()){
         throw std::invalid_argument("Column index is out of range\n");
     }
@@ -328,7 +352,7 @@ void DataFrame::encode_categoricals(std::vector<std::string> cols){
     }
 }
 
-void DataFrame::sort_by(std::string column){
+void DataFrame::sort_by(std::string column, bool ascending = true){
     if(df.find(column) == df.end()){
         std::string error_line = column + " is not found in the range\n";
         throw std::invalid_argument(error_line);
