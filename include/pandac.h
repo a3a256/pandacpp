@@ -42,7 +42,7 @@ class DataFrame{
 
         void tail(int l);
 
-        void drop(int index);
+        void drop(std::vector<int> indices={}, std::vector<std::string> names={});
 
         void rename_columns(std::map<std::string, std::string> dict);
 
@@ -63,7 +63,7 @@ class DataFrame{
             if(index != -1){
                 df.erase(columns[index]);
                 if(converted){
-                    df_e.erase(columns[index])
+                    df_e.erase(columns[index]);
                 }
                 columns.erase(columns.begin()+index);
             }
@@ -76,7 +76,7 @@ class DataFrame{
                 int j;
                 for(j=0; j<columns.size(); j++){
                     if(columns[j] == name){
-                        columns.erase(columns.beging()+j);
+                        columns.erase(columns.begin()+j);
                         break;
                     }
                 }
@@ -261,11 +261,35 @@ void DataFrame::to_csv(std::string path){
 }
 
 void DataFrame::drop(std::vector<int> indices, std::vector<std::string> names){
-    if(index >= df.size()){
-        throw std::invalid_argument("Column index is out of range\n");
+    if(indices.size() > columns.size() || names.size() > columns.size()){
+        throw std::invalid_argument("Number of columns to drop is more than the amount of columns\n");
     }
-    df.erase(columns[index]);
-    columns.erase(columns.begin()+index);
+    if(indices.size() != 0){
+        for(int j: indices){
+            if(j >= columns.size()){
+                throw std::invalid_argument("Column index is out of range\n");
+            }
+        }
+
+        for(int j: indices){
+            drop_col(j);
+        }
+
+        return;
+    }
+
+    if(names.size() != 0){
+        int j;
+        for(j=0; j<names.size(); j++){
+            if(df.find(names[j]) == df.end()){
+                throw std::invalid_argument("Column not found\n");
+            }
+        }
+        for(j = 0; j<names.size(); j++){
+            drop_col(-1, names[j]);
+        }
+        return;
+    }
 }
 
 void DataFrame::rename_columns(std::map<std::string, std::string> dict){
@@ -280,7 +304,7 @@ void DataFrame::rename_columns(std::map<std::string, std::string> dict){
                 }
             }
             columns.insert(columns.begin()+index, it.second);
-            drop_column(index+1);
+            drop_col(index+1);
         }else{
             error_line += it.first + " not found in range\n";
             throw std::invalid_argument(error_line);
@@ -352,7 +376,7 @@ void DataFrame::encode_categoricals(std::vector<std::string> cols){
     }
 }
 
-void DataFrame::sort_by(std::string column, bool ascending = true){
+void DataFrame::sort_by(std::string column, bool ascending){
     if(df.find(column) == df.end()){
         std::string error_line = column + " is not found in the range\n";
         throw std::invalid_argument(error_line);
