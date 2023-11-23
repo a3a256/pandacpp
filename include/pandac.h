@@ -32,6 +32,16 @@ class DataFrame{
 
         bool converted = false;
 
+        DataFrame(std::map<std::vector<std::string>> df_s = {}, std::map<std::vector<float>> df_f = {}){
+            if(df_s.size() > 0){
+                df = df_s;
+            }
+            if(df_f.size()>0){
+                df_e = df_f;
+                // conversion to string to be added
+            }
+        }
+
         void read_csv(std::string path, char delimeter, int head, std::vector<std::string> cols);
 
         void to_csv(std::string path);
