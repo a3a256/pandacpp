@@ -196,7 +196,7 @@ void DataFrame::head(int l = 5){
             for(pad=0; pad<diff; pad++){
                 line += ' ';
             }
-            line += df[columns[j]][i] + ' '; //change here back
+            line += df[columns[j]][i] + ' ';
         }
         line.pop_back();
         line += '\n';
@@ -231,7 +231,7 @@ void DataFrame::tail(int l = 5){
             for(pad=0; pad<diff; pad++){
                 line += ' ';
             }
-            line += df[columns[j]][i] + ' '; //change here back
+            line += df[columns[j]][i] + ' ';
         }
         line.pop_back();
         line += '\n';
