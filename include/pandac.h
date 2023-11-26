@@ -32,25 +32,11 @@ class DataFrame{
 
         bool converted = false;
 
-        DataFrame(std::map<std::vector<std::string>> df_s = {}, std::map<std::vector<float>> df_f = {}){
-            if(df_s.size() > 0){
-                df = df_s;
-                for(auto it: df_s){
-                    columns.push_back(it.first);
-                }
-                return;
-            }
-            if(df_f.size()>0){
-                df_e = df_f;
-                int i;
-                for(auto it: df_f){
-                    for(i=0; i<df_f[it.first]; i++){
-                        df[it.first].push_back(std::to_string(df_f[it.first][i]));
-                    }
-                }
-                return;
-            }
+        DataFrame(){
+            return;
         }
+
+        void to_dataframe(std::map<std::string, std::vector<std::string>> df_s = {}, std::map<std::string, std::vector<float>> df_f = {});
 
         void read_csv(std::string path, char delimeter, int head, std::vector<std::string> cols);
 
@@ -150,6 +136,17 @@ class DataFrame{
             }
         }
 };
+
+void DataFrame::to_dataframe(std::map<std::string, std::vector<std::string>> df_s, std::map<std::string, std::vector<float>> df_f){
+    if(df_s.size() != 0){
+        df = df_s;
+        for(auto it: df_s){
+            std::vector<std::string>().swap(columns);
+            columns.push_back(it.first);
+        }
+        return;
+    }
+}
 
 void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, std::vector<std::string> cols = {}){
     std::ifstream fan(path);
