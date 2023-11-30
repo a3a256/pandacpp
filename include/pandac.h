@@ -140,9 +140,21 @@ class DataFrame{
 void DataFrame::to_dataframe(std::map<std::string, std::vector<std::string>> df_s, std::map<std::string, std::vector<float>> df_f){
     if(df_s.size() != 0){
         df = df_s;
+        std::vector<std::string>().swap(columns);
         for(auto it: df_s){
-            std::vector<std::string>().swap(columns);
             columns.push_back(it.first);
+        }
+        return;
+    }
+
+    if(df_f.size() != 0){
+        df_e = df_f;
+        std::vector<std::string>().swap(columns);
+        for(auto it: df_f){
+            columns.push_back(it.first);
+            for(float i: it.second){
+                df[it.first].push_back(std::to_string(i));
+            }
         }
         return;
     }
