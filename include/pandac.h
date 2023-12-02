@@ -16,6 +16,11 @@
 
 // change data from long to string immediately!!
 
+struct type{
+    float num = NULL;
+    std::string line = "";
+};
+
 
 class DataFrame{
     public:
@@ -128,6 +133,16 @@ class DataFrame{
                 }
             }
             return error_cols;
+        }
+
+        bool is_number(std::string x){
+            float value;
+            try{
+                value = std::stof(x);
+            }catch (const char* msg){
+                return false;
+            }
+            return true;
         }
 
         void unique_vals(std::string col){
