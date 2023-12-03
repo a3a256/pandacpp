@@ -16,20 +16,21 @@
 
 // change data from long to string immediately!!
 
-struct type{
+struct val_type{
     float num = NULL;
+    int val = NULL;
     std::string line = "";
 };
 
 
 class DataFrame{
     public:
-        std::map<std::string, std::vector<std::string>> df;
+        std::map<std::string, std::vector<val_type>> df;
         std::map<std::string, std::vector<float>> df_e;
         std::vector<std::string> columns;
         std::map<std::string, std::map<std::string, std::string>> encoder;
         std::map<std::string, std::map<std::string, std::string>> decoder;
-        std::set<std::string> stk;
+        std::set<val_type> stk;
         std::pair<int, int> shape;
 
         std::vector<std::vector<std::string>> val_string;
@@ -41,7 +42,7 @@ class DataFrame{
             return;
         }
 
-        void to_dataframe(std::map<std::string, std::vector<std::string>> df_s = {}, std::map<std::string, std::vector<float>> df_f = {});
+        template <typename T> void to_dataframe(std::map<std::string, std::vector<T>> df_p = {});
 
         void read_csv(std::string path, char delimeter, int head, std::vector<std::string> cols);
 
@@ -70,6 +71,18 @@ class DataFrame{
 
     private:
 
+        template <typename T> std::string toString(const T& t){
+            return std::to_string(t);
+        }
+
+        std::string toString(const char* t){
+            return t;
+        }
+
+        std::string toString(std::string &t){
+            return t;
+        }
+
         void drop_col(int index=-1, std::string name = ""){
             if(index != -1){
                 df.erase(columns[index]);
@@ -97,7 +110,16 @@ class DataFrame{
         void internal_append_row(std::stringstream &s, std::string word, char delim){
             int col = 0;
             while(std::getline(s, word, delim)){
-                df[columns[col]].push_back(word);
+                val_type t;
+                if(is_number(word)){
+                    if(word.find('.') != std::string::npos){
+                        t.num = std::stof(word);
+                    }else{
+                        t.val = std::stoi(word);
+                    }
+                }
+                t.line = word;
+                df[columns[col]].push_back(t);
                 col++;
             }
         }
@@ -120,20 +142,22 @@ class DataFrame{
             return !value.empty() && std::all_of(value.begin(), value.end(), ::isdigit);
         }
 
-        std::string is_df_convertible(){
-            std::string error_cols = "";
-            float value;
-            for(auto it: df){
-                for(std::string val: it.second){ // change back to std::string
-                    try{
-                        value = std::stof(val);
-                    }catch (const char* msg){
-                        return it.first + " not convertible";
-                    }
-                }
-            }
-            return error_cols;
-        }
+        // !!!!!!!!!!! temporarily freeze function 
+
+        // std::string is_df_convertible(){
+        //     std::string error_cols = "";
+        //     float value;
+        //     for(auto it: df){
+        //         for(std::string val: it.second){ // change back to std::string
+        //             try{
+        //                 value = std::stof(val);
+        //             }catch (const char* msg){
+        //                 return it.first + " not convertible";
+        //             }
+        //         }
+        //     }
+        //     return error_cols;
+        // }
 
         bool is_number(std::string x){
             float value;
@@ -145,6 +169,9 @@ class DataFrame{
             return true;
         }
 
+
+        // YET TO CHANGE UNIQUE FUNCTION
+
         void unique_vals(std::string col){
             for(int i=0; i<df[col].size(); i++){
                 stk.insert(df[col][i]);
@@ -152,26 +179,24 @@ class DataFrame{
         }
 };
 
-void DataFrame::to_dataframe(std::map<std::string, std::vector<std::string>> df_s, std::map<std::string, std::vector<float>> df_f){
-    if(df_s.size() != 0){
-        df = df_s;
-        std::vector<std::string>().swap(columns);
-        for(auto it: df_s){
-            columns.push_back(it.first);
-        }
-        return;
-    }
-
-    if(df_f.size() != 0){
-        df_e = df_f;
-        std::vector<std::string>().swap(columns);
-        for(auto it: df_f){
-            columns.push_back(it.first);
-            for(float i: it.second){
-                df[it.first].push_back(std::to_string(i));
+template <typename T> void DataFrame::to_dataframe(std::map<std::string, std::vector<T>> df_p){
+    std::string line = "";
+    std::vector<std::string>().swap(columns);
+    for(auto it: df_p){
+        columns.push_back(it.first);
+        for(T i: it.second){
+            val_type t;
+            line = toString(i);
+            if(is_number(line)){
+                if(line.find('.') != std::string::npos){
+                    t.num = std::stof(line);
+                }else{
+                    t.val = std::stoi(line);
+                }
             }
+            t.line = line;
+            df[it.first].push_back(t);
         }
-        return;
     }
 }
 
@@ -220,7 +245,7 @@ void DataFrame::head(int l = 5){
     for(i=0; i<columns.size(); i++){
         biggest_size = std::max((int)columns[i].size(), biggest_size);
         for(j=0; j<df[columns[i]].size(); j++){
-            biggest_size = std::max((int)df[columns[i]][j].size(), biggest_size);
+            biggest_size = std::max((int)df[columns[i]][j].line.size(), biggest_size);
         }
     }
     for(i=0; i<columns.size(); i++){
@@ -236,11 +261,11 @@ void DataFrame::head(int l = 5){
     limiter = std::min(l, (int)df[columns[0]].size());
     for(i=0; i<limiter; i++){
         for(j=0; j<columns.size(); j++){
-            diff = biggest_size - df[columns[j]][i].size();
+            diff = biggest_size - df[columns[j]][i].line.size();
             for(pad=0; pad<diff; pad++){
                 line += ' ';
             }
-            line += df[columns[j]][i] + ' ';
+            line += df[columns[j]][i].line + ' ';
         }
         line.pop_back();
         line += '\n';
@@ -255,7 +280,7 @@ void DataFrame::tail(int l = 5){
     for(i=0; i<columns.size(); i++){
         biggest_size = std::max((int)columns[i].size(), biggest_size);
         for(j=0; j<df[columns[i]].size(); j++){
-            biggest_size = std::max((int)df[columns[i]][j].size(), biggest_size);
+                biggest_size = std::max((int)df[columns[i]][j].line.size(), biggest_size);
         }
     }
     for(i=0; i<columns.size(); i++){
@@ -271,11 +296,11 @@ void DataFrame::tail(int l = 5){
     limiter = std::min(l, (int)df[columns[0]].size());
     for(i=df[columns[0]].size()-limiter; i<df[columns[0]].size(); i++){
         for(j=0; j<columns.size(); j++){
-            diff = biggest_size - df[columns[j]][i].size();
+            diff = biggest_size - df[columns[j]][i].line.size();
             for(pad=0; pad<diff; pad++){
                 line += ' ';
             }
-            line += df[columns[j]][i] + ' ';
+            line += df[columns[j]][i].line + ' ';
         }
         line.pop_back();
         line += '\n';
@@ -294,14 +319,14 @@ void DataFrame::to_csv(std::string path){
     len = df[columns[0]].size();
     for(i=0; i<len-1; i++){
         for(j=0; j<columns.size()-1; j++){
-            fout << df[columns[j]][i] << ';';
+            fout << df[columns[j]][i].line << ';';
         }
-        fout << df[columns[j]][i] << '\n';
+        fout << df[columns[j]][i].line << '\n';
     }
     for(j=0; j<columns.size()-1; j++){
-        fout << df[columns[j]][i] << ';';
+        fout << df[columns[j]][i].line << ';';
     }
-    fout << df[columns[j]][i];
+    fout << df[columns[j]][i].line;
 }
 
 void DataFrame::drop(std::vector<int> indices, std::vector<std::string> names){
@@ -356,38 +381,42 @@ void DataFrame::rename_columns(std::map<std::string, std::string> dict){
     }
 }
 
-void DataFrame::convert_df(){
-    std::string convertible = is_df_convertible();
-    if(convertible.size() != 0){
-        throw std::invalid_argument(convertible);
-    }
-    for(auto it: df){
-        for(std::string val: it.second){
-            df_e[it.first].push_back(std::stof(val));
-        }
-    }
+// void DataFrame::convert_df(){
+//     std::string convertible = is_df_convertible();
+//     if(convertible.size() != 0){
+//         throw std::invalid_argument(convertible);
+//     }
+//     for(auto it: df){
+//         for(std::string val: it.second){
+//             df_e[it.first].push_back(std::stof(val));
+//         }
+//     }
 
-    converted = true;
-}
+//     converted = true;
+// }
+
+
+
+// YET TO CHANGE UNIQUE FUNCTION
 
 void DataFrame::unique(std::string value){
     if(df.find(value) == df.end()){
         throw std::invalid_argument("Column not found in scope\n");
     }
-    std::set<std::string>().swap(stk);
+    std::set<val_type>().swap(stk);
     unique_vals(value);
     for(auto it: stk){
-        std::cout << it << " ";
+        std::cout << it.line << " ";
     }
-    std::set<std::string>().swap(stk);
+    std::set<val_type>().swap(stk);
     std::cout << "\n";
 }
 
 void DataFrame::nunique(std::string value){
-    std::set<std::string>().swap(stk);
+    std::set<val_type>().swap(stk);
     unique_vals(value);
     std::cout << stk.size() << "\n";
-    std::set<std::string>().swap(stk);
+    std::set<val_type>().swap(stk);
 }
 
 void DataFrame::encode_categoricals(std::vector<std::string> cols){
@@ -395,8 +424,8 @@ void DataFrame::encode_categoricals(std::vector<std::string> cols){
     std::map<std::string, std::set<std::string>> ecn;
     for(i=0; i<cols.size(); i++){
         if(df.find(cols[i]) != df.end()){
-            for(std::string s: df[cols[i]]){
-                ecn[cols[i]].insert(s);
+            for(val_type s: df[cols[i]]){
+                ecn[cols[i]].insert(s.line);
             }
         }else{
             std::string line = "Column " + cols[i] + " not found in scope\n";
@@ -415,19 +444,20 @@ void DataFrame::encode_categoricals(std::vector<std::string> cols){
 
     for(auto it: encoder){
         for(i=0; i<df[it.first].size(); i++){
-            df[it.first][i] = encoder[it.first][df[it.first][i]];
+            df[it.first][i].line = encoder[it.first][df[it.first][i].line];
+            df[it.first][i].val = std::stoi(df[it.first][i].line);
         }
     }
 }
 
 void DataFrame::sort_by(std::string column, bool ascending){
     if(df.find(column) == df.end()){
-        std::string error_line = column + " is not found in the range\n";
+        std::string error_line = column + " was not found in the range\n";
         throw std::invalid_argument(error_line);
     }
 
-    std::vector<std::vector<std::string>> vals_extracted;
-    std::vector<std::string> temp;
+    std::vector<std::vector<val_type>> vals_extracted;
+    std::vector<val_type> temp;
     std::vector<std::vector<float>> floats_extracted;
     std::vector<float> ftemp;
     int i, j, col_index = 0;
@@ -442,29 +472,23 @@ void DataFrame::sort_by(std::string column, bool ascending){
             }
         }
         vals_extracted.push_back(temp);
-        if(converted){
-            floats_extracted.push_back(ftemp);
-        }
-        std::vector<std::string>().swap(temp);
-        std::vector<float>().swap(ftemp);
+        std::vector<val_type>().swap(temp);
     }
 
     bool sorted = false;
     while(!sorted){
         sorted = true;
         for(i=1; i<vals_extracted.size(); i++){
-            if(converted){
-                if(floats_extracted[i][col_index] < floats_extracted[i-1][col_index]){
+            if(vals_extracted[i][col_index].val != NULL || vals_extracted[i][col_index].num != NULL){
+                if(vals_extracted[i][col_index].val < vals_extracted[i-1][col_index].val ||
+                vals_extracted[i][col_index].num < vals_extracted[i-1][col_index].num){
                     sorted = false;
-                    ftemp = floats_extracted[i];
-                    floats_extracted[i] = floats_extracted[i-1];
-                    floats_extracted[i-1] = ftemp;
                     temp = vals_extracted[i];
                     vals_extracted[i] = vals_extracted[i-1];
                     vals_extracted[i-1] = temp;
                 }
             }else{
-                if(vals_extracted[i][col_index] < vals_extracted[i-1][col_index]){
+                if(vals_extracted[i][col_index].line < vals_extracted[i-1][col_index].line){
                     sorted = false;
                     temp = vals_extracted[i];
                     vals_extracted[i] = vals_extracted[i-1];
@@ -473,7 +497,7 @@ void DataFrame::sort_by(std::string column, bool ascending){
             }
         }
     }
-    std::vector<std::string>().swap(temp);
+    std::vector<val_type>().swap(temp);
     std::vector<float>().swap(ftemp);
     for(i=0; i<df[columns[0]].size(); i++){
         for(j=0; j<columns.size(); j++){
