@@ -17,9 +17,24 @@
 // change data from long to string immediately!!
 
 struct val_type{
-    float num = NULL;
-    int val = NULL;
+    bool isfloat=false;
+    bool isint=false;
+    float num;
+    int val;
     std::string line = "";
+
+    bool operator<(const val_type& other) const {
+        // You need to define a meaningful comparison here.
+        // This is just a simple example; adjust as per your requirements.
+
+        if(isfloat){
+            return val < other.val;
+        }
+        if(isint){
+            return num < other.num;
+        }
+        return line < other.line;
+    }
 };
 
 
@@ -41,7 +56,7 @@ class DataFrame{
         DataFrame(){
             return;
         }
-
+        // RETURN
         template <typename T> void to_dataframe(std::map<std::string, std::vector<T>> df_p = {});
 
         void read_csv(std::string path, char delimeter, int head, std::vector<std::string> cols);
@@ -71,11 +86,11 @@ class DataFrame{
 
     private:
 
-        template <typename T> std::string toString(const T& t){
+        template <typename T> std::string toString(T& t){
             return std::to_string(t);
         }
 
-        std::string toString(const char* t){
+        std::string toString(char* t){
             return t;
         }
 
@@ -163,8 +178,10 @@ class DataFrame{
             float value;
             try{
                 value = std::stof(x);
-            }catch (const char* msg){
+            }catch (const std::invalid_argument& ex){
                 return false;
+            }catch (const std::out_of_range& ex) {
+                return false;  // Value is out of the range for float
             }
             return true;
         }
@@ -178,6 +195,8 @@ class DataFrame{
             }
         }
 };
+
+// RETURN
 
 template <typename T> void DataFrame::to_dataframe(std::map<std::string, std::vector<T>> df_p){
     std::string line = "";
@@ -479,9 +498,9 @@ void DataFrame::sort_by(std::string column, bool ascending){
     while(!sorted){
         sorted = true;
         for(i=1; i<vals_extracted.size(); i++){
-            if(vals_extracted[i][col_index].val != NULL || vals_extracted[i][col_index].num != NULL){
-                if(vals_extracted[i][col_index].val < vals_extracted[i-1][col_index].val ||
-                vals_extracted[i][col_index].num < vals_extracted[i-1][col_index].num){
+            if(vals_extracted[i][col_index].isfloat || vals_extracted[i][col_index].isint){
+                if((vals_extracted[i][col_index].val < vals_extracted[i-1][col_index].val && vals_extracted[i-1][col_index].isint) ||
+                (vals_extracted[i][col_index].num < vals_extracted[i-1][col_index].num && vals_extracted[i-1][col_index].isfloat)){
                     sorted = false;
                     temp = vals_extracted[i];
                     vals_extracted[i] = vals_extracted[i-1];
