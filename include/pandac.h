@@ -17,20 +17,15 @@
 // change data from long to string immediately!!
 
 struct val_type{
-    bool isfloat=false;
-    bool isint=false;
+    bool isnum=false;
     float num;
-    int val;
     std::string line = "";
 
     bool operator<(const val_type& other) const {
         // You need to define a meaningful comparison here.
         // This is just a simple example; adjust as per your requirements.
 
-        if(isfloat){
-            return val < other.val;
-        }
-        if(isint){
+        if(num){
             return num < other.num;
         }
         return line < other.line;
@@ -127,11 +122,8 @@ class DataFrame{
             while(std::getline(s, word, delim)){
                 val_type t;
                 if(is_number(word)){
-                    if(word.find('.') != std::string::npos){
-                        t.num = std::stof(word);
-                    }else{
-                        t.val = std::stoi(word);
-                    }
+                    t.num = std::stof(word);
+                    t.isnum = true;
                 }
                 t.line = word;
                 df[columns[col]].push_back(t);
@@ -207,11 +199,7 @@ template <typename T> void DataFrame::to_dataframe(std::map<std::string, std::ve
             val_type t;
             line = toString(i);
             if(is_number(line)){
-                if(line.find('.') != std::string::npos){
-                    t.num = std::stof(line);
-                }else{
-                    t.val = std::stoi(line);
-                }
+                t.num = std::stod(line);
             }
             t.line = line;
             df[it.first].push_back(t);
@@ -464,7 +452,7 @@ void DataFrame::encode_categoricals(std::vector<std::string> cols){
     for(auto it: encoder){
         for(i=0; i<df[it.first].size(); i++){
             df[it.first][i].line = encoder[it.first][df[it.first][i].line];
-            df[it.first][i].val = std::stoi(df[it.first][i].line);
+            df[it.first][i].num = std::stof(df[it.first][i].line);
         }
     }
 }
@@ -498,13 +486,21 @@ void DataFrame::sort_by(std::string column, bool ascending){
     while(!sorted){
         sorted = true;
         for(i=1; i<vals_extracted.size(); i++){
-            if(vals_extracted[i][col_index].isfloat || vals_extracted[i][col_index].isint){
-                if((vals_extracted[i][col_index].val < vals_extracted[i-1][col_index].val && vals_extracted[i-1][col_index].isint) ||
-                (vals_extracted[i][col_index].num < vals_extracted[i-1][col_index].num && vals_extracted[i-1][col_index].isfloat)){
-                    sorted = false;
-                    temp = vals_extracted[i];
-                    vals_extracted[i] = vals_extracted[i-1];
-                    vals_extracted[i-1] = temp;
+            if(vals_extracted[i][col_index].isnum){
+                if(ascending){
+                    if(vals_extracted[i][col_index].num < vals_extracted[i-1][col_index].num){
+                        sorted = false;
+                        temp = vals_extracted[i];
+                        vals_extracted[i] = vals_extracted[i-1];
+                        vals_extracted[i-1] = temp;
+                    }
+                }else{
+                    if(vals_extracted[i][col_index].num > vals_extracted[i-1][col_index].num){
+                        sorted = false;
+                        temp = vals_extracted[i];
+                        vals_extracted[i] = vals_extracted[i-1];
+                        vals_extracted[i-1] = temp;
+                    }
                 }
             }else{
                 if(vals_extracted[i][col_index].line < vals_extracted[i-1][col_index].line){
