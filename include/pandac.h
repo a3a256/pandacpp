@@ -78,6 +78,8 @@ class DataFrame{
 
         void sort_by(std::string column, bool ascending = true);
 
+        std::map<std::string, int> value_counts(std::string col);
+
 
     private:
 
@@ -522,4 +524,13 @@ void DataFrame::sort_by(std::string column, bool ascending){
             }
         }
     }
+}
+
+std::map<std::string, int> DataFrame::value_counts(std::string col){
+    std::map<std::string, int> counts;
+    int i;
+    for(i=0; i<df[col].size(); i++){
+        counts[df[col][i].line]++;
+    }
+    return counts;
 }
