@@ -13,6 +13,7 @@
 #include <set>
 #include <cstdlib>
 #include <utility>
+#include <numeric>
 
 // change data from long to string immediately!!
 
@@ -528,9 +529,34 @@ void DataFrame::sort_by(std::string column, bool ascending){
 
 std::map<std::string, int> DataFrame::value_counts(std::string col){
     std::map<std::string, int> counts;
-    int i;
+    int i, space;
     for(i=0; i<df[col].size(); i++){
         counts[df[col][i].line]++;
     }
+    space = 0;
+    for(auto it: counts){
+        space = std::max((int)it.first.size(), space);
+    }
+    std::string head = "";
+    std::string num = "";
+    for(i=0; i<space; i++){
+        head += ' ';
+    }
+    head += col;
+    head += '\n';
+    for(auto it: counts){
+        head += it.first;
+        for(i=0; i<space - it.first.size(); i++){
+            head += ' ';
+        }
+        num = std::to_string(it.second);
+        for(i=0; i<col.size()-num.size(); i++){
+            head += ' ';
+        }
+        head += num;
+        head += '\n';
+    }
+    head.pop_back();
+    std::cout << head << '\n';
     return counts;
 }
