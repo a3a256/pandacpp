@@ -560,3 +560,14 @@ std::map<std::string, int> DataFrame::value_counts(std::string col){
     std::cout << head << '\n';
     return counts;
 }
+
+
+class Series{
+    public:
+
+        Series(std::vector<std::string> vals, std::string name = ""){
+            return;
+        }
+
+        float mean();
+};
