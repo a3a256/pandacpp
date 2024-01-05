@@ -565,9 +565,26 @@ std::map<std::string, int> DataFrame::value_counts(std::string col){
 class Series{
     public:
 
+        std::vector<val_type> values;
+
         Series(std::vector<std::string> vals, std::string name = ""){
             return;
         }
 
         float mean();
+        float sum();
 };
+
+float Series::mean(){
+    float _sum = sum();
+    return (float)(_sum/(float)values.size());
+}
+
+float Series::sum(){
+    float _sum = 0.0f;
+    int i;
+    for(i=0; i<values.size(); i++){
+        _sum += values[i].num;
+    }
+    return _sum;
+}
