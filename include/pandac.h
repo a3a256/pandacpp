@@ -568,15 +568,42 @@ class Series{
         std::vector<val_type> values;
 
         Series(std::vector<std::string> vals, std::string name = ""){
+            int i;
+            for(i=0; i<vals.size(); i++){
+                val_type t;
+                if(is_number(vals[i])){
+                    t.isnum = true;
+                    t.num = std::stof(vals[i]);
+                }
+            }
             return;
         }
 
         float mean();
         float sum();
+
+
+    private:
+        bool is_number(std::string x){
+            float value;
+            try{
+                value = std::stof(x);
+            }catch (const std::invalid_argument& ex){
+                return false;
+            }catch (const std::out_of_range& ex) {
+                return false;  // Value is out of the range for float
+            }
+            return true;
+        }
 };
 
 float Series::mean(){
-    float _sum = sum();
+    float _sum;
+    try{
+        _sum = sum();
+    }catch (const std::invalid_argument& ex){
+        throw ex;
+    }
     return (float)(_sum/(float)values.size());
 }
 
@@ -584,6 +611,9 @@ float Series::sum(){
     float _sum = 0.0f;
     int i;
     for(i=0; i<values.size(); i++){
+        if(!values[i].isnum){
+            throw std::invalid_argument("Cannpt convert 'str' to scalar value\n");
+        }
         _sum += values[i].num;
     }
     return _sum;
