@@ -581,6 +581,7 @@ class Series{
 
         float mean();
         float sum();
+        std::set<val_type> unique();
 
 
     private:
@@ -617,4 +618,13 @@ float Series::sum(){
         _sum += values[i].num;
     }
     return _sum;
+}
+
+std::set<val_type> Series::unique(){
+    std::set<val_type> stk;
+    int i;
+    for(i=0; i<values.size(); i++){
+        stk.insert(values[i]);
+    }
+    return stk;
 }
