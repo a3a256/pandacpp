@@ -583,6 +583,7 @@ class Series{
         float sum();
         std::set<val_type> unique();
         int nunique();
+        std::map<val_type, int> value_counts();
 
 
     private:
@@ -634,4 +635,13 @@ int Series::nunique(){
     std::set<val_type> stk;
     stk = unique();
     return (int)stk.size();
+}
+
+std::map<val_type, int> Series::value_counts(){
+    std::map<val_type, int> mp;
+    int i;
+    for(i=0; i<values.size(); i++){
+        mp[values[i]]++;
+    }
+    return mp;
 }
