@@ -36,8 +36,8 @@ struct val_type{
 
 class DataFrame{
     public:
-        std::map<std::string, std::vector<val_type>> df;
-        std::map<std::string, std::vector<float>> df_e;
+        std::map<std::string, std::vector<Series>> df;
+        std::map<std::string, std::vector<std::string>> temp_df;
         std::vector<std::string> columns;
         std::map<std::string, std::map<std::string, std::string>> encoder;
         std::map<std::string, std::map<std::string, std::string>> decoder;
@@ -123,13 +123,7 @@ class DataFrame{
         void internal_append_row(std::stringstream &s, std::string word, char delim){
             int col = 0;
             while(std::getline(s, word, delim)){
-                val_type t;
-                if(is_number(word)){
-                    t.num = std::stof(word);
-                    t.isnum = true;
-                }
-                t.line = word;
-                df[columns[col]].push_back(t);
+                temp_df[columns[col]].push_back(word);
                 col++;
             }
         }
