@@ -23,6 +23,7 @@ struct val_type{
     bool operator<(const val_type& other) const {
         // You need to define a meaningful comparison here.
         // This is just a simple example; adjust as per your requirements.
+        // will be used in sets
 
         if(num){
             return num < other.num;
