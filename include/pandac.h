@@ -15,8 +15,6 @@
 #include <utility>
 #include <numeric>
 
-// change data from long to string immediately!!
-
 struct val_type{
     bool isnum=false;
     float num;
