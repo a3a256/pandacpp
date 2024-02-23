@@ -98,17 +98,11 @@ class DataFrame{
         void drop_col(int index=-1, std::string name = ""){
             if(index != -1){
                 df.erase(columns[index]);
-                if(converted){
-                    df_e.erase(columns[index]);
-                }
                 columns.erase(columns.begin()+index);
             }
 
             if(name != ""){
                 df.erase(name);
-                if(converted){
-                    df_e.erase(name);
-                }
                 int j;
                 for(j=0; j<columns.size(); j++){
                     if(columns[j] == name){
