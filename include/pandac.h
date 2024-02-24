@@ -170,7 +170,7 @@ class DataFrame{
 
 
         // YET TO CHANGE UNIQUE FUNCTION
-
+        // loop over Series and print out their unique results in the form of hash maps
         void unique_vals(std::string col){
             for(int i=0; i<df[col].size(); i++){
                 stk.insert(df[col][i]);
