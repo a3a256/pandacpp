@@ -35,7 +35,7 @@ struct val_type{
 
 class DataFrame{
     public:
-        std::map<std::string, std::vector<Series>> df;
+        std::map<std::string, Series> df;
         std::map<std::string, std::vector<std::string>> temp_df;
         std::vector<std::string> columns;
         std::map<std::string, std::map<std::string, std::string>> encoder;
@@ -172,8 +172,8 @@ class DataFrame{
         // YET TO CHANGE UNIQUE FUNCTION
         // loop over Series and print out their unique results in the form of hash maps
         void unique_vals(std::string col){
-            for(int i=0; i<df[col].size(); i++){
-                stk.insert(df[col][i]);
+            for(int i=0; i<df[col].values.size(); i++){
+                stk.insert(df[col].values[i]);
             }
         }
 };
