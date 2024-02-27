@@ -25,7 +25,7 @@ struct val_type{
         // This is just a simple example; adjust as per your requirements.
         // will be used in sets
 
-        if(num){
+        if(isnum){
             return num < other.num;
         }
         return line < other.line;
@@ -241,8 +241,8 @@ void DataFrame::head(int l = 5){
     biggest_size = INT_MIN;
     for(i=0; i<columns.size(); i++){
         biggest_size = std::max((int)columns[i].size(), biggest_size);
-        for(j=0; j<df[columns[i]].size(); j++){
-            biggest_size = std::max((int)df[columns[i]][j].line.size(), biggest_size);
+        for(j=0; j<df[columns[i]].values.size(); j++){
+            biggest_size = std::max((int)df[columns[i]].values[j].line.size(), biggest_size);
         }
     }
     for(i=0; i<columns.size(); i++){
@@ -562,6 +562,8 @@ class Series{
                     t.isnum = true;
                     t.num = std::stof(vals[i]);
                 }
+                t.line = vals[i];
+                values.push_back(t);
             }
             return;
         }
