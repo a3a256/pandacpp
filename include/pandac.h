@@ -463,10 +463,7 @@ void DataFrame::sort_by(std::string column, bool ascending){
             if(columns[j] == column){
                 col_index = j;            
             }
-            temp.push_back(df[columns[j]][i]);
-            if(converted){
-                ftemp.push_back(df_e[columns[j]][i]);
-            }
+            temp.push_back(df[columns[j]].values[i]);
         }
         vals_extracted.push_back(temp);
         std::vector<val_type>().swap(temp);
@@ -507,9 +504,6 @@ void DataFrame::sort_by(std::string column, bool ascending){
     for(i=0; i<df[columns[0]].size(); i++){
         for(j=0; j<columns.size(); j++){
             df[columns[j]][i] = vals_extracted[i][j];
-            if(converted){
-                df_e[columns[j]][i] = floats_extracted[i][j];
-            }
         }
     }
 }
