@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <utility>
 #include <numeric>
+#include <math.h>
 
 struct val_type{
     bool isnum=false;
@@ -236,13 +237,14 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
 }
 
 void DataFrame::head(int l = 5){
-    int i, j, biggest_size, diff, pad, limiter;
+    int i, j, biggest_size, diff, pad, limiter, vv;
     std::string line = "";
     biggest_size = INT_MIN;
     for(i=0; i<columns.size(); i++){
         biggest_size = std::max((int)columns[i].size(), biggest_size);
         for(j=0; j<df[columns[i]].values.size(); j++){
-            biggest_size = std::max((int)df[columns[i]].values[j].line.size(), biggest_size);
+            vv = (int)df[columns[i]].values[j].line.size();
+            biggest_size = std::max(vv, biggest_size);
         }
     }
     for(i=0; i<columns.size(); i++){
@@ -255,7 +257,8 @@ void DataFrame::head(int l = 5){
     }
     line.pop_back();
     line += '\n';
-    limiter = std::min(l, (int)df[columns[0]].size());
+    vv = (int)df[columns[0]].values[0].size();
+    limiter = std::min(l, vv);
     for(i=0; i<limiter; i++){
         for(j=0; j<columns.size(); j++){
             diff = biggest_size - df[columns[j]][i].line.size();
@@ -271,13 +274,14 @@ void DataFrame::head(int l = 5){
 }
 
 void DataFrame::tail(int l = 5){
-    int i, j, biggest_size, diff, pad, limiter;
+    int i, j, biggest_size, diff, pad, limiter, vv;
     std::string line = "";
     biggest_size = INT_MIN;
     for(i=0; i<columns.size(); i++){
         biggest_size = std::max((int)columns[i].size(), biggest_size);
         for(j=0; j<df[columns[i]].size(); j++){
-                biggest_size = std::max((int)df[columns[i]][j].line.size(), biggest_size);
+            vv = (int)df[columns[i]][j].line.size();
+            biggest_size = std::max(vv, biggest_size);
         }
     }
     for(i=0; i<columns.size(); i++){
@@ -290,7 +294,8 @@ void DataFrame::tail(int l = 5){
     }
     line.pop_back();
     line += '\n';
-    limiter = std::min(l, (int)df[columns[0]].size());
+    vv = (int)df[columns[0]].size();
+    limiter = std::min(l, vv);
     for(i=df[columns[0]].size()-limiter; i<df[columns[0]].size(); i++){
         for(j=0; j<columns.size(); j++){
             diff = biggest_size - df[columns[j]][i].line.size();
