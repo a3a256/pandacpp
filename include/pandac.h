@@ -569,6 +569,7 @@ class Series{
 
         float mean();
         float sum();
+        void sort_values(bool ascending=true);
         std::set<val_type> unique();
         int nunique();
         std::map<val_type, int> value_counts();
@@ -586,6 +587,24 @@ class Series{
             }
             return true;
         }
+
+        struct ascend_compare{
+            inline bool operator() (val_type &a, val_type &b){
+                if(a.isnum && b.isnum){
+                    return a.num < b.num;
+                }
+                return a.line < b.line;
+            }
+        };
+
+        struct descend_compare{
+            inline bool operator() (val_type &a, val_type &b){
+                if(a.isnum && b.isnum){
+                    return a.num > b.num;
+                }
+                return a.line > b.line;
+            }
+        };
 };
 
 float Series::mean(){
