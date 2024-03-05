@@ -15,6 +15,7 @@
 #include <utility>
 #include <numeric>
 #include <math.h>
+#include <algorithm>
 
 struct val_type{
     bool isnum=false;
@@ -651,4 +652,13 @@ std::map<val_type, int> Series::value_counts(){
         mp[values[i]]++;
     }
     return mp;
+}
+
+void Series::sort_values(bool ascending){
+    if(ascending){
+        std::sort(values.begin(), values.end(), ascend_compare());
+        return;
+    }
+    std::sort(values.begin(), values.end(), descend_compare());
+    return;
 }
