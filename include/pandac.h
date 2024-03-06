@@ -34,6 +34,158 @@ struct val_type{
     }
 };
 
+class Series{
+    public:
+
+        std::vector<val_type> values;
+        std::string col_name;
+
+        void to_series(std::vector<std::string> vals, std::string name = "");
+
+        float mean();
+        float sum();
+        void sort_values(bool ascending=true);
+        void head(int n=5);
+        std::set<val_type> unique();
+        int nunique();
+        std::map<val_type, int> value_counts();
+
+
+    private:
+        bool is_number(std::string x){
+            float value;
+            try{
+                value = std::stof(x);
+            }catch (const std::invalid_argument& ex){
+                return false;
+            }catch (const std::out_of_range& ex) {
+                return false;  // Value is out of the range for float
+            }
+            return true;
+        }
+
+        struct ascend_compare{
+            inline bool operator() (val_type &a, val_type &b){
+                if(a.isnum && b.isnum){
+                    return a.num < b.num;
+                }
+                return a.line < b.line;
+            }
+        };
+
+        struct descend_compare{
+            inline bool operator() (val_type &a, val_type &b){
+                if(a.isnum && b.isnum){
+                    return a.num > b.num;
+                }
+                return a.line > b.line;
+            }
+        };
+};
+
+void Series::to_series(std::vector<std::string> vals, std::string name){
+        col_name = name;
+        int i;
+        for(i=0; i<vals.size(); i++){
+            val_type t;
+            if(is_number(vals[i])){
+                t.isnum = true;
+                t.num = std::stof(vals[i]);
+            }
+            t.line = vals[i];
+            values.push_back(t);
+        }
+        return;
+}
+
+float Series::mean(){
+    float _sum;
+    try{
+        _sum = sum();
+    }catch (const std::invalid_argument& ex){
+        throw ex;
+    }
+    return (float)(_sum/(float)values.size());
+}
+
+float Series::sum(){
+    float _sum = 0.0f;
+    int i;
+    for(i=0; i<values.size(); i++){
+        if(!values[i].isnum){
+            throw std::invalid_argument("Cannpt convert 'str' to scalar value\n");
+        }
+        _sum += values[i].num;
+    }
+    return _sum;
+}
+
+std::set<val_type> Series::unique(){
+    std::set<val_type> stk;
+    int i;
+    for(i=0; i<values.size(); i++){
+        stk.insert(values[i]);
+    }
+    return stk;
+}
+
+int Series::nunique(){
+    std::set<val_type> stk;
+    stk = unique();
+    return (int)stk.size();
+}
+
+std::map<val_type, int> Series::value_counts(){
+    std::map<val_type, int> mp;
+    int i;
+    for(i=0; i<values.size(); i++){
+        mp[values[i]]++;
+    }
+    return mp;
+}
+
+void Series::sort_values(bool ascending){
+    if(ascending){
+        std::sort(values.begin(), values.end(), ascend_compare());
+        return;
+    }
+    std::sort(values.begin(), values.end(), descend_compare());
+    return;
+}
+
+void Series::head(int n){
+    int overall_size = (int)values.size();
+    int limit = std::min(overall_size, n);
+    int i, cur_val_size, whole_space, j;
+    whole_space = INT_MIN;
+    for(i=0; i<limit; i++){
+        cur_val_size = values[i].line.size();
+        whole_space = std::max(whole_space, cur_val_size);
+    }
+    whole_space = std::max(whole_space, (int)col_name.size());
+    std::string res = "", line = "";
+    cur_val_size = col_name.size();
+    for(j=0; j<whole_space-cur_val_size; j++){
+        line += ' ';
+    }
+    line += col_name;
+    res += line;
+    res += '\n';
+    line = "";
+    for(i=0; i<limit; i++){
+        cur_val_size = values[i].line.size();
+        for(j=0; j<whole_space-cur_val_size; j++){
+            line += ' ';
+        }
+        line += values[i].line;
+        res += line;
+        res += '\n';
+        line = "";
+    }
+    std::cout << res;
+    return;
+}
+
 
 class DataFrame{
     public:
@@ -234,6 +386,11 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
     index --;
     shape.first = index;
     shape.second = columns.size();
+    for(auto it: temp_df){
+        Series col;
+        col.to_series(it.second, it.first);
+        df[it.first] = col;
+    }
     return;
 }
 
@@ -258,15 +415,15 @@ void DataFrame::head(int l = 5){
     }
     line.pop_back();
     line += '\n';
-    vv = (int)df[columns[0]].values[0].size();
+    vv = (int)df[columns[0]].values[0].line.size();
     limiter = std::min(l, vv);
     for(i=0; i<limiter; i++){
         for(j=0; j<columns.size(); j++){
-            diff = biggest_size - df[columns[j]][i].line.size();
+            diff = biggest_size - df[columns[j]].values[i].line.size();
             for(pad=0; pad<diff; pad++){
                 line += ' ';
             }
-            line += df[columns[j]][i].line + ' ';
+            line += df[columns[j]].values[i].line + ' ';
         }
         line.pop_back();
         line += '\n';
@@ -280,8 +437,8 @@ void DataFrame::tail(int l = 5){
     biggest_size = INT_MIN;
     for(i=0; i<columns.size(); i++){
         biggest_size = std::max((int)columns[i].size(), biggest_size);
-        for(j=0; j<df[columns[i]].size(); j++){
-            vv = (int)df[columns[i]][j].line.size();
+        for(j=0; j<df[columns[i]].values.size(); j++){
+            vv = (int)df[columns[i]].values[j].line.size();
             biggest_size = std::max(vv, biggest_size);
         }
     }
@@ -295,15 +452,15 @@ void DataFrame::tail(int l = 5){
     }
     line.pop_back();
     line += '\n';
-    vv = (int)df[columns[0]].size();
+    vv = (int)df[columns[0]].values.size();
     limiter = std::min(l, vv);
-    for(i=df[columns[0]].size()-limiter; i<df[columns[0]].size(); i++){
+    for(i=df[columns[0]].values.size()-limiter; i<df[columns[0]].values.size(); i++){
         for(j=0; j<columns.size(); j++){
-            diff = biggest_size - df[columns[j]][i].line.size();
+            diff = biggest_size - df[columns[j]].values[i].line.size();
             for(pad=0; pad<diff; pad++){
                 line += ' ';
             }
-            line += df[columns[j]][i].line + ' ';
+            line += df[columns[j]].values[i].line + ' ';
         }
         line.pop_back();
         line += '\n';
@@ -319,17 +476,17 @@ void DataFrame::to_csv(std::string path){
         fout << columns[i] << ';';
     }
     fout << columns[i] << "\n";
-    len = df[columns[0]].size();
+    len = df[columns[0]].values.size();
     for(i=0; i<len-1; i++){
         for(j=0; j<columns.size()-1; j++){
-            fout << df[columns[j]][i].line << ';';
+            fout << df[columns[j]].values[i].line << ';';
         }
-        fout << df[columns[j]][i].line << '\n';
+        fout << df[columns[j]].values[i].line << '\n';
     }
     for(j=0; j<columns.size()-1; j++){
-        fout << df[columns[j]][i].line << ';';
+        fout << df[columns[j]].values[i].line << ';';
     }
-    fout << df[columns[j]][i].line;
+    fout << df[columns[j]].values[i].line;
 }
 
 void DataFrame::drop(std::vector<int> indices, std::vector<std::string> names){
@@ -427,7 +584,7 @@ void DataFrame::encode_categoricals(std::vector<std::string> cols){
     std::map<std::string, std::set<std::string>> ecn;
     for(i=0; i<cols.size(); i++){
         if(df.find(cols[i]) != df.end()){
-            for(val_type s: df[cols[i]]){
+            for(val_type s: df[cols[i]].values){
                 ecn[cols[i]].insert(s.line);
             }
         }else{
@@ -446,9 +603,9 @@ void DataFrame::encode_categoricals(std::vector<std::string> cols){
     }
 
     for(auto it: encoder){
-        for(i=0; i<df[it.first].size(); i++){
-            df[it.first][i].line = encoder[it.first][df[it.first][i].line];
-            df[it.first][i].num = std::stof(df[it.first][i].line);
+        for(i=0; i<df[it.first].values.size(); i++){
+            df[it.first].values[i].line = encoder[it.first][df[it.first].values[i].line];
+            df[it.first].values[i].num = std::stof(df[it.first].values[i].line);
         }
     }
 }
@@ -464,7 +621,7 @@ void DataFrame::sort_by(std::string column, bool ascending){
     std::vector<std::vector<float>> floats_extracted;
     std::vector<float> ftemp;
     int i, j, col_index = 0;
-    for(i=0; i<df[columns[0]].size(); i++){
+    for(i=0; i<df[columns[0]].values.size(); i++){
         for(j=0; j<columns.size(); j++){
             if(columns[j] == column){
                 col_index = j;            
@@ -507,9 +664,9 @@ void DataFrame::sort_by(std::string column, bool ascending){
     }
     std::vector<val_type>().swap(temp);
     std::vector<float>().swap(ftemp);
-    for(i=0; i<df[columns[0]].size(); i++){
+    for(i=0; i<df[columns[0]].values.size(); i++){
         for(j=0; j<columns.size(); j++){
-            df[columns[j]][i] = vals_extracted[i][j];
+            df[columns[j]].values[i] = vals_extracted[i][j];
         }
     }
 }
@@ -517,8 +674,8 @@ void DataFrame::sort_by(std::string column, bool ascending){
 std::map<std::string, int> DataFrame::value_counts(std::string col){
     std::map<std::string, int> counts;
     int i, space;
-    for(i=0; i<df[col].size(); i++){
-        counts[df[col][i].line]++;
+    for(i=0; i<df[col].values.size(); i++){
+        counts[df[col].values[i].line]++;
     }
     space = 0;
     for(auto it: counts){
@@ -546,119 +703,4 @@ std::map<std::string, int> DataFrame::value_counts(std::string col){
     head.pop_back();
     std::cout << head << '\n';
     return counts;
-}
-
-
-class Series{
-    public:
-
-        std::vector<val_type> values;
-
-        Series(std::vector<std::string> vals, std::string name = ""){
-            int i;
-            for(i=0; i<vals.size(); i++){
-                val_type t;
-                if(is_number(vals[i])){
-                    t.isnum = true;
-                    t.num = std::stof(vals[i]);
-                }
-                t.line = vals[i];
-                values.push_back(t);
-            }
-            return;
-        }
-
-        float mean();
-        float sum();
-        void sort_values(bool ascending=true);
-        std::set<val_type> unique();
-        int nunique();
-        std::map<val_type, int> value_counts();
-
-
-    private:
-        bool is_number(std::string x){
-            float value;
-            try{
-                value = std::stof(x);
-            }catch (const std::invalid_argument& ex){
-                return false;
-            }catch (const std::out_of_range& ex) {
-                return false;  // Value is out of the range for float
-            }
-            return true;
-        }
-
-        struct ascend_compare{
-            inline bool operator() (val_type &a, val_type &b){
-                if(a.isnum && b.isnum){
-                    return a.num < b.num;
-                }
-                return a.line < b.line;
-            }
-        };
-
-        struct descend_compare{
-            inline bool operator() (val_type &a, val_type &b){
-                if(a.isnum && b.isnum){
-                    return a.num > b.num;
-                }
-                return a.line > b.line;
-            }
-        };
-};
-
-float Series::mean(){
-    float _sum;
-    try{
-        _sum = sum();
-    }catch (const std::invalid_argument& ex){
-        throw ex;
-    }
-    return (float)(_sum/(float)values.size());
-}
-
-float Series::sum(){
-    float _sum = 0.0f;
-    int i;
-    for(i=0; i<values.size(); i++){
-        if(!values[i].isnum){
-            throw std::invalid_argument("Cannpt convert 'str' to scalar value\n");
-        }
-        _sum += values[i].num;
-    }
-    return _sum;
-}
-
-std::set<val_type> Series::unique(){
-    std::set<val_type> stk;
-    int i;
-    for(i=0; i<values.size(); i++){
-        stk.insert(values[i]);
-    }
-    return stk;
-}
-
-int Series::nunique(){
-    std::set<val_type> stk;
-    stk = unique();
-    return (int)stk.size();
-}
-
-std::map<val_type, int> Series::value_counts(){
-    std::map<val_type, int> mp;
-    int i;
-    for(i=0; i<values.size(); i++){
-        mp[values[i]]++;
-    }
-    return mp;
-}
-
-void Series::sort_values(bool ascending){
-    if(ascending){
-        std::sort(values.begin(), values.end(), ascend_compare());
-        return;
-    }
-    std::sort(values.begin(), values.end(), descend_compare());
-    return;
 }
