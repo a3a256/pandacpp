@@ -46,6 +46,7 @@ class Series{
         float sum();
         void sort_values(bool ascending=true);
         void head(int n=5);
+        void tail(int n=5);
         std::set<val_type> unique();
         int nunique();
         std::map<val_type, int> value_counts();
@@ -173,6 +174,39 @@ void Series::head(int n){
     res += '\n';
     line = "";
     for(i=0; i<limit; i++){
+        cur_val_size = values[i].line.size();
+        for(j=0; j<whole_space-cur_val_size; j++){
+            line += ' ';
+        }
+        line += values[i].line;
+        res += line;
+        res += '\n';
+        line = "";
+    }
+    std::cout << res;
+    return;
+}
+
+void Series::tail(int n){
+    int overall_size = (int)values.size();
+    int limit = std::min(overall_size, n);
+    int i, cur_val_size, whole_space, j;
+    whole_space = INT_MIN;
+    for(i=values.size()-limit; i<values.size(); i++){
+        cur_val_size = (int)values[i].line.size();
+        whole_space = std::max(whole_space, cur_val_size);
+    }
+    whole_space = std::max(whole_space, (int)col_name.size());
+    std::string res = "", line = "";
+    cur_val_size = col_name.size();
+    for(j=0; j<whole_space-cur_val_size; j++){
+        line += ' ';
+    }
+    line += col_name;
+    res += line;
+    res += '\n';
+    line = "";
+    for(i=values.size()-limit; i<values.size(); i++){
         cur_val_size = values[i].line.size();
         for(j=0; j<whole_space-cur_val_size; j++){
             line += ' ';
