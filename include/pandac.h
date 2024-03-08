@@ -44,6 +44,7 @@ class Series{
 
         float mean();
         float sum();
+        val_type median();
         void sort_values(bool ascending=true);
         void head(int n=5);
         void tail(int n=5);
@@ -218,6 +219,25 @@ void Series::tail(int n){
     }
     std::cout << res;
     return;
+}
+
+val_type Series::median(){
+    std::vector<val_type> copy;
+    copy = values;
+    std::sort(copy.begin(), copy.end(), ascend_compare());
+    int size = (int)copy.size();
+    int mid = size/2;
+    if(size%2 == 0){
+        float mean = (copy[mid].num + copy[mid+1].num)/2.0f;
+        val_type t;
+        t.isnum = true;
+        t.num = mean;
+        t.line = std::to_string(mean);
+
+        return t;
+    }
+
+    return copy[mid];
 }
 
 
