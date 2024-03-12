@@ -44,7 +44,8 @@ class Series{
 
         float mean();
         float sum();
-        val_type median();
+        float median();
+        val_type mode();
         void sort_values(bool ascending=true);
         void head(int n=5);
         void tail(int n=5);
@@ -84,6 +85,10 @@ class Series{
             }
         };
 };
+
+val_type Series::mode(){
+    map<std::string, int> counts;
+}
 
 void Series::to_series(std::vector<std::string> vals, std::string name){
         col_name = name;
@@ -221,7 +226,7 @@ void Series::tail(int n){
     return;
 }
 
-val_type Series::median(){
+float Series::median(){
     std::vector<val_type> copy;
     copy = values;
     std::sort(copy.begin(), copy.end(), ascend_compare());
