@@ -239,10 +239,10 @@ float Series::median(){
         t.num = mean;
         t.line = std::to_string(mean);
 
-        return t;
+        return t.num;
     }
 
-    return copy[mid];
+    return copy[mid].num;
 }
 
 
