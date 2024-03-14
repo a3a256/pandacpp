@@ -87,7 +87,23 @@ class Series{
 };
 
 val_type Series::mode(){
-    map<std::string, int> counts;
+    std::map<val_type, int> counts;
+    int i, popularity;
+    for(i=0; i<values.size(); i++){
+        counts[values[i]]++;
+    }
+    popularity = INT_MIN;
+    for(auto it: counts){
+        popularity = std::max(popularity, it.second);
+    }
+    val_type t;
+    for(auto it: counts){
+        if(it.second == popularity){
+            t = it.first;
+            break;
+        }
+    }
+    return t;
 }
 
 void Series::to_series(std::vector<std::string> vals, std::string name){
