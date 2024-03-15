@@ -136,7 +136,7 @@ float Series::sum(){
     int i;
     for(i=0; i<values.size(); i++){
         if(!values[i].isnum){
-            throw std::invalid_argument("Cannpt convert 'str' to scalar value\n");
+            throw std::invalid_argument("Cannot convert 'str' to scalar value\n");
         }
         _sum += values[i].num;
     }
@@ -301,7 +301,7 @@ class DataFrame{
 
         void encode_categoricals(std::vector<std::string> cols);
 
-        void unique(std::string value);
+        void unique(std::vector<std::string> value);
 
         void nunique(std::string value);
 
@@ -634,9 +634,14 @@ void DataFrame::rename_columns(std::map<std::string, std::string> dict){
 
 // YET TO CHANGE UNIQUE FUNCTION
 
-void DataFrame::unique(std::string value){
-    if(df.find(value) == df.end()){
-        throw std::invalid_argument("Column not found in scope\n");
+void DataFrame::unique(std::vector<std::string> cols){
+    std::string name;
+    int i;
+    for(i=0; i<cols.size(); i++){
+        if(df.find(cols[i]) == df.end()){
+            name = "Column " + cols[i] + " not found in scope\n";
+            throw std::invalid_argument(name);
+        }
     }
     std::set<val_type>().swap(stk);
     unique_vals(value);
