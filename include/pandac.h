@@ -303,7 +303,7 @@ class DataFrame{
 
         void unique(std::vector<std::string> value);
 
-        void nunique(std::string value);
+        void nunique(std::vector<std::string> value);
 
         void sort_by(std::string column, bool ascending = true);
 
@@ -652,11 +652,43 @@ void DataFrame::unique(std::vector<std::string> cols){
     std::cout << "\n";
 }
 
-void DataFrame::nunique(std::string value){
-    std::set<val_type>().swap(stk);
-    unique_vals(value);
-    std::cout << stk.size() << "\n";
-    std::set<val_type>().swap(stk);
+void DataFrame::nunique(std::vector<std::string> cols){
+    if(cols.size() > columns.size()){
+        throw std::invalid_argument("Number of columns is more than the actual amount of columns\n");
+    }
+    int i;
+    for(i=0; i<cols.size(); i++){
+        if(df.find(cols[i]) == df.end()){
+            std::string name = "Column " + cols[i] + " not found in scope\n";
+            throw std::invalid_argument(name);
+        }
+    }
+    std::map<std::string, int> mp;
+    for(i=0; i<cols.size(); i++){
+        mp[cols[i]] = df[cols[i]].nunique();
+    }
+    int indexes_size, col_size;
+    indexes_size = INT_MIN;
+    col_size = INT_MIN;
+    for(auto it: mp){
+        indexes_size = std::max((int)it.first.size(), indexes_size);
+        col_size = std::max((int)std::to_string(it.second).size(), col_size);
+    }
+    std::string line, index, num;
+    line = "";
+    for(auto it: mp){
+        index = it.first;
+        while(index.size() < indexes_size){
+            index += ' ';
+        }
+        num = std::to_string(it.second);
+        while(num.size() < col_size){
+            num = ' '+num;
+        }
+        line += index + num;
+        line += '\n';
+    }
+    std::cout << line;
 }
 
 void DataFrame::encode_categoricals(std::vector<std::string> cols){
