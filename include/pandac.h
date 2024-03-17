@@ -67,6 +67,33 @@ class Series{
             return true;
         }
 
+        void print_out_counts(std::map<val_type, int> mp){
+            int indexes_size, col_size;
+            indexes_size = INT_MIN;
+            col_size = INT_MIN;
+            for(auto it: mp){
+                indexes_size = std::max((int)it.first.line.size(), indexes_size);
+                col_size = std::max((int)std::to_string(it.second).size(), col_size);
+            }
+            std::string line, index, num;
+            line = "";
+            for(auto it: mp){
+                index = it.first.line;
+                while(index.size() < indexes_size){
+                    index += ' ';
+                }
+                num = std::to_string(it.second);
+                while(num.size() < col_size){
+                    num = ' '+num;
+                }
+                line += index+num;
+                line += '\n';
+            }
+
+            std::cout << line;
+            return;
+        }
+
         struct ascend_compare{
             inline bool operator() (val_type &a, val_type &b){
                 if(a.isnum && b.isnum){
@@ -164,6 +191,7 @@ std::map<val_type, int> Series::value_counts(){
     for(i=0; i<values.size(); i++){
         mp[values[i]]++;
     }
+    print_out_counts(mp);
     return mp;
 }
 
@@ -635,21 +663,22 @@ void DataFrame::rename_columns(std::map<std::string, std::string> dict){
 // YET TO CHANGE UNIQUE FUNCTION
 
 void DataFrame::unique(std::vector<std::string> cols){
-    std::string name;
-    int i;
-    for(i=0; i<cols.size(); i++){
-        if(df.find(cols[i]) == df.end()){
-            name = "Column " + cols[i] + " not found in scope\n";
-            throw std::invalid_argument(name);
-        }
-    }
-    std::set<val_type>().swap(stk);
-    unique_vals(value);
-    for(auto it: stk){
-        std::cout << it.line << " ";
-    }
-    std::set<val_type>().swap(stk);
-    std::cout << "\n";
+    // YET TO REMOVE THIS PART
+    // std::string name;
+    // int i;
+    // for(i=0; i<cols.size(); i++){
+    //     if(df.find(cols[i]) == df.end()){
+    //         name = "Column " + cols[i] + " not found in scope\n";
+    //         throw std::invalid_argument(name);
+    //     }
+    // }
+    // std::set<val_type>().swap(stk);
+    // unique_vals(value);
+    // for(auto it: stk){
+    //     std::cout << it.line << " ";
+    // }
+    // std::set<val_type>().swap(stk);
+    // std::cout << "\n";
 }
 
 void DataFrame::nunique(std::vector<std::string> cols){
