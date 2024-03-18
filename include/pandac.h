@@ -370,6 +370,33 @@ class DataFrame{
             }
         }
 
+        void print_out_counts(std::map<val_type, int> mp){
+            int indexes_size, col_size;
+            indexes_size = INT_MIN;
+            col_size = INT_MIN;
+            for(auto it: mp){
+                indexes_size = std::max((int)it.first.line.size(), indexes_size);
+                col_size = std::max((int)std::to_string(it.second).size(), col_size);
+            }
+            std::string line, index, num;
+            line = "";
+            for(auto it: mp){
+                index = it.first.line;
+                while(index.size() < indexes_size){
+                    index += ' ';
+                }
+                num = std::to_string(it.second);
+                while(num.size() < col_size){
+                    num = ' '+num;
+                }
+                line += index+num;
+                line += '\n';
+            }
+
+            std::cout << line;
+            return;
+        }
+
         void internal_append_row(std::stringstream &s, std::string word, char delim){
             int col = 0;
             while(std::getline(s, word, delim)){
