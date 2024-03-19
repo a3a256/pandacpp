@@ -467,17 +467,19 @@ class DataFrame{
 template <typename T> void DataFrame::to_dataframe(std::map<std::string, std::vector<T>> df_p){
     std::string line = "";
     std::vector<std::string>().swap(columns);
+    std::set<int> sizes;
+    for(auto it: df_p){
+        sizes.insert((int)it.second.size());
+    }
+    if(sizes.size() > 1){
+        throw std::invalid_argument("All columns must have the same number of values");
+    }
+    std::set<int>().swap(sizes);
     for(auto it: df_p){
         columns.push_back(it.first);
-        for(T i: it.second){
-            val_type t;
-            line = toString(i);
-            if(is_number(line)){
-                t.num = std::stod(line);
-            }
-            t.line = line;
-            df[it.first].push_back(t);
-        }
+        Series s;
+        s.to_series(it.second);
+        df[it.first] = s;
     }
 }
 
