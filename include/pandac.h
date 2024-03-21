@@ -38,9 +38,10 @@ class Series{
     public:
 
         std::vector<val_type> values;
+        std::vector<int> indices;
         std::string col_name;
 
-        void to_series(std::vector<std::string> vals, std::string name = "");
+        void to_series(std::vector<std::string> vals, std::string name = "", std::vector<int> index={});
 
         float mean();
         float sum();
@@ -133,10 +134,11 @@ val_type Series::mode(){
     return t;
 }
 
-void Series::to_series(std::vector<std::string> vals, std::string name){
+void Series::to_series(std::vector<std::string> vals, std::string name, std::vector<int> index){
         col_name = name;
         int i;
         for(i=0; i<vals.size(); i++){
+            indices.push_back(i);
             val_type t;
             if(is_number(vals[i])){
                 t.isnum = true;
@@ -144,6 +146,12 @@ void Series::to_series(std::vector<std::string> vals, std::string name){
             }
             t.line = vals[i];
             values.push_back(t);
+        }
+        if(index.size() != 0){
+            if(index.size() != values.size()){
+                throw std::invalid_argument("Incorrect number of indices");
+            }
+            indices = index;
         }
         return;
 }
@@ -196,6 +204,13 @@ std::map<val_type, int> Series::value_counts(){
 }
 
 void Series::sort_values(bool ascending){
+    std::vector<std::pair<int, val_type>> index_col;
+    int i;
+    for(i=0; i<values.size(); i++){
+        index_col.push_back({indices[i], values[i]});
+    }
+
+    // sort by vector of pairs and resent indices
     if(ascending){
         std::sort(values.begin(), values.end(), ascend_compare());
         return;
