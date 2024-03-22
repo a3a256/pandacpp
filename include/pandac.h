@@ -96,20 +96,20 @@ class Series{
         }
 
         struct ascend_compare{
-            inline bool operator() (val_type &a, val_type &b){
-                if(a.isnum && b.isnum){
-                    return a.num < b.num;
+            inline bool operator() (std::pair<int, val_type> &a, std::pair<int, val_type> &b){
+                if(a.second.isnum && b.second.isnum){
+                    return a.second.num < b.second.num;
                 }
-                return a.line < b.line;
+                return a.second.line < b.second.line;
             }
         };
 
         struct descend_compare{
-            inline bool operator() (val_type &a, val_type &b){
-                if(a.isnum && b.isnum){
-                    return a.num > b.num;
+            inline bool operator() (std::pair<int, val_type> &a, std::pair<int, val_type> &b){
+                if(a.second.isnum && b.second.isnum){
+                    return a.second.num > b.second.num;
                 }
-                return a.line > b.line;
+                return a.second.line > b.second.line;
             }
         };
 };
@@ -212,10 +212,10 @@ void Series::sort_values(bool ascending){
 
     // sort by vector of pairs and resent indices
     if(ascending){
-        std::sort(values.begin(), values.end(), ascend_compare());
+        std::sort(index_col.begin(), index_col.end(), ascend_compare());
         return;
     }
-    std::sort(values.begin(), values.end(), descend_compare());
+    std::sort(index_col.begin(), index_col.end(), descend_compare());
     return;
 }
 
