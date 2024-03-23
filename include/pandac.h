@@ -309,6 +309,7 @@ class DataFrame{
     public:
         std::map<std::string, Series> df;
         std::map<std::string, std::vector<std::string>> temp_df;
+        std::vector<std::vector<val_type>> values;
         std::vector<std::string> columns;
         std::map<std::string, std::map<std::string, std::string>> encoder;
         std::map<std::string, std::map<std::string, std::string>> decoder;
@@ -412,12 +413,33 @@ class DataFrame{
             return;
         }
 
+        bool is_number(std::string x){
+            float value;
+            try{
+                value = std::stof(x);
+            }catch (const std::invalid_argument& ex){
+                return false;
+            }catch (const std::out_of_range& ex) {
+                return false;  // Value is out of the range for float
+            }
+            return true;
+        }
+
         void internal_append_row(std::stringstream &s, std::string word, char delim){
             int col = 0;
+            std::vector<val_type> row;
             while(std::getline(s, word, delim)){
+                val_type t;
+                if(is_number(word)){
+                    t.isnum = true;
+                    t.num = std::stof(word);
+                }
+                t.line = word;
+                row.push_back(t);
                 temp_df[columns[col]].push_back(word);
                 col++;
             }
+            values.push_back(row);
         }
 
         bool check_float(std::string &value){
@@ -454,18 +476,6 @@ class DataFrame{
         //     }
         //     return error_cols;
         // }
-
-        bool is_number(std::string x){
-            float value;
-            try{
-                value = std::stof(x);
-            }catch (const std::invalid_argument& ex){
-                return false;
-            }catch (const std::out_of_range& ex) {
-                return false;  // Value is out of the range for float
-            }
-            return true;
-        }
 
 
         // YET TO CHANGE UNIQUE FUNCTION
