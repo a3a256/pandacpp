@@ -310,6 +310,7 @@ class DataFrame{
         std::map<std::string, Series> df;
         std::map<std::string, std::vector<std::string>> temp_df;
         std::vector<std::vector<val_type>> values;
+        std::vector<int> index;
         std::vector<std::string> columns;
         std::map<std::string, std::map<std::string, std::string>> encoder;
         std::map<std::string, std::map<std::string, std::string>> decoder;
@@ -516,10 +517,10 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
     std::fstream fin;
     fin.open(path, std::ios::in);
     std::string line, word;
-    int index = 0;
+    int row_num = 0;
     while(std::getline(fin, line)){
         std::stringstream s(line);
-        if(index == head){
+        if(row_num == head){
             while(std::getline(s, word, delimeter)){
                 columns.push_back(word);
             }
@@ -529,19 +530,20 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
                     for(std::string col: cols){
                         columns.push_back(col);
                     }
+                    index.push_back(row_num);
                     internal_append_row(s, word, delimeter);
                 }else{
                     throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
                 }
             }
-        }else if(index > head){
+        }else if(row_num > head){
+            index.push_back(row_num);
             internal_append_row(s, word, delimeter);
         }
-        index++;
+        row_num++;
     }
-    index -= head;
-    index --;
-    shape.first = index;
+    row_num -= head+1;
+    shape.first = row_num;
     shape.second = columns.size();
     for(auto it: temp_df){
         Series col;
