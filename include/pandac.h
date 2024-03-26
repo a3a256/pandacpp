@@ -450,33 +450,10 @@ class DataFrame{
 
             return iss.eof() && !iss.fail();
         }
-
+        // maybe remove integer
         bool check_int(std::string &value){
-            // char *p;
-            // long converted = std::strtol(value, &p, 10);
-            // if(*p){
-            //     return false;
-            // }
-            // return true;
             return !value.empty() && std::all_of(value.begin(), value.end(), ::isdigit);
         }
-
-        // !!!!!!!!!!! temporarily freeze function 
-
-        // std::string is_df_convertible(){
-        //     std::string error_cols = "";
-        //     float value;
-        //     for(auto it: df){
-        //         for(std::string val: it.second){ // change back to std::string
-        //             try{
-        //                 value = std::stof(val);
-        //             }catch (const char* msg){
-        //                 return it.first + " not convertible";
-        //             }
-        //         }
-        //     }
-        //     return error_cols;
-        // }
 
 
         // YET TO CHANGE UNIQUE FUNCTION
