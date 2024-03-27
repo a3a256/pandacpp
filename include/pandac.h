@@ -791,13 +791,22 @@ void DataFrame::sort_by(std::string column, bool ascending){
     }
     std::map<val_type, std::vector<int>> original, sorted_series;
     int i, j, col_index = 0;
-    for(i=0; i<df[column].values.size(); i++){
-        original[df[column].values[i]].push_back(i);
+    for(i=0; i<columns.size(); i++){
+        if(columns[i] == column){
+            col_index = i;
+            break;
+        }
     }
-    df[column].sort_values(ascending);
-    for(i=0; i<df[column].values.size(); i++){
-        sorted_series[df[column].values[i]].push_back(i);
-    }
+    std::sort(values.begin(), values.end(), [](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
+        return a[col_index] < b[col_index];
+    });
+    // for(i=0; i<df[column].values.size(); i++){
+    //     original[df[column].values[i]].push_back(i);
+    // }
+    // df[column].sort_values(ascending);
+    // for(i=0; i<df[column].values.size(); i++){
+    //     sorted_series[df[column].values[i]].push_back(i);
+    // }
 
 
     std::vector<std::vector<val_type>> vals_extracted;
