@@ -216,6 +216,10 @@ void Series::sort_values(bool ascending){
         return;
     }
     std::sort(index_col.begin(), index_col.end(), descend_compare());
+    std::vector<int>().swap(indices);
+    for(i=0; i<index_col.size(); i++){
+        indices.push_back(index_col[i].first);
+    }
     return;
 }
 
@@ -797,7 +801,7 @@ void DataFrame::sort_by(std::string column, bool ascending){
             break;
         }
     }
-    std::sort(values.begin(), values.end(), [](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
+    std::sort(values.begin(), values.end(), [col_index](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
         return a[col_index] < b[col_index];
     });
     // for(i=0; i<df[column].values.size(); i++){
