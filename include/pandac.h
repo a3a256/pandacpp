@@ -32,6 +32,17 @@ struct val_type{
         }
         return line < other.line;
     }
+
+    bool operator>(const val_type& other) const {
+        // You need to define a meaningful comparison here.
+        // This is just a simple example; adjust as per your requirements.
+        // will be used in sets
+
+        if(isnum){
+            return num > other.num;
+        }
+        return line > other.line;
+    }
 };
 
 class Series{
@@ -97,19 +108,13 @@ class Series{
 
         struct ascend_compare{
             inline bool operator() (std::pair<int, val_type> &a, std::pair<int, val_type> &b){
-                if(a.second.isnum && b.second.isnum){
-                    return a.second.num < b.second.num;
-                }
-                return a.second.line < b.second.line;
+                return a.second < b.second;
             }
         };
 
         struct descend_compare{
             inline bool operator() (std::pair<int, val_type> &a, std::pair<int, val_type> &b){
-                if(a.second.isnum && b.second.isnum){
-                    return a.second.num > b.second.num;
-                }
-                return a.second.line > b.second.line;
+                return a.second > b.second;
             }
         };
 };
@@ -801,9 +806,18 @@ void DataFrame::sort_by(std::string column, bool ascending){
             break;
         }
     }
-    std::sort(values.begin(), values.end(), [col_index](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
-        return a[col_index] < b[col_index];
-    });
+
+    if(ascending){
+        std::sort(values.begin(), values.end(), [col_index](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
+            return a[col_index] < b[col_index];
+        });
+    }
+
+    if(!(ascending)){
+        std::sort(values.begin(), values.end(), [col_index](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
+            return a[col_index] > b[col_index];
+        });
+    }
     // for(i=0; i<df[column].values.size(); i++){
     //     original[df[column].values[i]].push_back(i);
     // }
@@ -811,8 +825,6 @@ void DataFrame::sort_by(std::string column, bool ascending){
     // for(i=0; i<df[column].values.size(); i++){
     //     sorted_series[df[column].values[i]].push_back(i);
     // }
-
-
     std::vector<std::vector<val_type>> vals_extracted;
     std::vector<val_type> temp;
     std::vector<std::vector<float>> floats_extracted;
