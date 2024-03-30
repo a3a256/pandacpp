@@ -798,7 +798,6 @@ void DataFrame::sort_by(std::string column, bool ascending){
         std::string error_line = column + " was not found in the range\n";
         throw std::invalid_argument(error_line);
     }
-    std::map<val_type, std::vector<int>> original, sorted_series;
     int i, j, col_index = 0;
     for(i=0; i<columns.size(); i++){
         if(columns[i] == column){
@@ -811,20 +810,11 @@ void DataFrame::sort_by(std::string column, bool ascending){
         std::sort(values.begin(), values.end(), [col_index](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
             return a[col_index] < b[col_index];
         });
-    }
-
-    if(!(ascending)){
+    }else{
         std::sort(values.begin(), values.end(), [col_index](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
             return a[col_index] > b[col_index];
         });
     }
-    // for(i=0; i<df[column].values.size(); i++){
-    //     original[df[column].values[i]].push_back(i);
-    // }
-    // df[column].sort_values(ascending);
-    // for(i=0; i<df[column].values.size(); i++){
-    //     sorted_series[df[column].values[i]].push_back(i);
-    // }
     std::vector<std::vector<val_type>> vals_extracted;
     std::vector<val_type> temp;
     std::vector<std::vector<float>> floats_extracted;
