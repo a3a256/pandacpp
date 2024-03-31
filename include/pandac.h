@@ -107,14 +107,14 @@ class Series{
         }
 
         struct ascend_compare{
-            inline bool operator() (std::pair<int, val_type> &a, std::pair<int, val_type> &b){
-                return a.second < b.second;
+            inline bool operator() (val_type &a, val_type &b){
+                return a < b;
             }
         };
 
         struct descend_compare{
-            inline bool operator() (std::pair<int, val_type> &a, std::pair<int, val_type> &b){
-                return a.second > b.second;
+            inline bool operator() (val_type &a, val_type &b){
+                return a > b;
             }
         };
 };
@@ -209,22 +209,12 @@ std::map<val_type, int> Series::value_counts(){
 }
 
 void Series::sort_values(bool ascending){
-    std::vector<std::pair<int, val_type>> index_col;
-    int i;
-    for(i=0; i<values.size(); i++){
-        index_col.push_back({indices[i], values[i]});
-    }
-
     // sort by vector of pairs and resent indices
     if(ascending){
-        std::sort(index_col.begin(), index_col.end(), ascend_compare());
+        std::sort(values.begin(), values.end(), ascend_compare());
         return;
     }
-    std::sort(index_col.begin(), index_col.end(), descend_compare());
-    std::vector<int>().swap(indices);
-    for(i=0; i<index_col.size(); i++){
-        indices.push_back(index_col[i].first);
-    }
+    std::sort(values.begin(), values.end(), descend_compare());
     return;
 }
 
