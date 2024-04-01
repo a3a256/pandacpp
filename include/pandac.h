@@ -792,11 +792,13 @@ void DataFrame::sort_by(std::string column, bool ascending){
     for(i=0; i<columns.size(); i++){
         if(columns[i] == column){
             col_index = i;
+            std::cout << "found\n";
             break;
         }
     }
     // df[columns[col_index]].sort_values(ascending);
     if(ascending){
+        std::cout << "check\n";
         std::sort(values.begin(), values.end(), [col_index](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
             return a[col_index] < b[col_index];
         });
@@ -805,6 +807,7 @@ void DataFrame::sort_by(std::string column, bool ascending){
             return a[col_index] > b[col_index];
         });
     }
+    std::cout << "sorted\n";
     // std::vector<std::vector<val_type>> vals_extracted;
     // std::vector<val_type> temp;
     // std::vector<std::vector<float>> floats_extracted;
