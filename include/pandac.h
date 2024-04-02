@@ -356,6 +356,21 @@ class DataFrame{
 
     private:
 
+        class Compare{
+            public:
+                Compare(int col, bool asc): col_(col), asc_(asc){}
+                bool operator() (std::vector<val_type> &a, std::vector<val_type> &b){
+                    if(asc_){
+                        return a[col_] < b[col_];
+                    }else{
+                        return a[col_] > b[col_];
+                    }
+                }
+            private:
+                int col_;
+                bool asc_;
+        };
+
         template <typename T> std::string toString(T& t){
             return std::to_string(t);
         }
@@ -439,6 +454,7 @@ class DataFrame{
                 temp_df[columns[col]].push_back(word);
                 col++;
             }
+            std::cout << row.size() << '\n'; // the problem is with rows, the first row is empty
             values.push_back(row);
         }
 
@@ -796,17 +812,9 @@ void DataFrame::sort_by(std::string column, bool ascending){
             break;
         }
     }
+    std::cout << values.size() << ", " << values[0].size() << '\n';
     // df[columns[col_index]].sort_values(ascending);
-    if(ascending){
-        std::cout << "check\n";
-        std::sort(values.begin(), values.end(), [col_index](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
-            return a[col_index] < b[col_index];
-        });
-    }else{
-        std::sort(values.begin(), values.end(), [col_index](std::vector<val_type> &a, std::vector<val_type> &b) -> bool{
-            return a[col_index] > b[col_index];
-        });
-    }
+    std::sort(values.begin(), values.end(), Compare(col_index, ascending));
     std::cout << "sorted\n";
     // std::vector<std::vector<val_type>> vals_extracted;
     // std::vector<val_type> temp;
