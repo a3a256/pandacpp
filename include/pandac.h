@@ -450,7 +450,9 @@ class DataFrame{
                     t.num = std::stof(word);
                 }
                 t.line = word;
+                // std::cout << word << ' ';
                 row.push_back(t);
+                std::cout << columns[col] << ' ';
                 temp_df[columns[col]].push_back(word);
                 col++;
             }
@@ -510,12 +512,10 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
     fin.open(path, std::ios::in);
     std::string line, word;
     int row_num = 0;
+    // CHANGE THE FOLLOWING LOOP!!!
     while(std::getline(fin, line)){
         std::stringstream s(line);
         if(row_num == head){
-            while(std::getline(s, word, delimeter)){
-                columns.push_back(word);
-            }
             if(cols.size() != 0){
                 if(cols.size() == columns.size()){
                     std::vector<std::string>().swap(columns);
@@ -527,6 +527,10 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
                 }else{
                     throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
                 }
+            }else{
+                while(std::getline(s, word, delimeter)){
+                columns.push_back(word);
+            }
             }
         }else if(row_num > head){
             index.push_back(row_num);
@@ -566,7 +570,7 @@ void DataFrame::head(int l = 5){
     }
     line.pop_back();
     line += '\n';
-    vv = (int)df[columns[0]].values[0].line.size();
+    vv = (int)df[columns[0]].values.size();
     limiter = std::min(l, vv);
     for(i=0; i<limiter; i++){
         for(j=0; j<columns.size(); j++){
