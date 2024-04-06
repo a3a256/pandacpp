@@ -516,7 +516,9 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
     while(std::getline(fin, line)){
         std::stringstream s(line);
         if(cols.size() == columns.size()){
-            std::vector<std::string>().swap(columns);
+            while(std::getline(s, word, delimeter)){
+                columns.push_back(word);
+            }
             for(std::string col: cols){
                 columns.push_back(col);
             }
@@ -540,7 +542,7 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
             }else{
                 while(std::getline(s, word, delimeter)){
                 columns.push_back(word);
-            }
+                }
             }
         }else if(row_num > head){
             index.push_back(row_num);
