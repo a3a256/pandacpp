@@ -515,37 +515,22 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
     // CHANGE THE FOLLOWING LOOP!!!
     while(std::getline(fin, line)){
         std::stringstream s(line);
-        if(cols.size() == columns.size()){
+        if(cols.size() != 0 && columns.size() == 0){
             while(std::getline(s, word, delimeter)){
                 columns.push_back(word);
             }
-            for(std::string col: cols){
-                columns.push_back(col);
-            }
-            index.push_back(row_num);
-            internal_append_row(s, word, delimeter);
-        }else{
-            throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
-        }
-        if(row_num == head){
-            if(cols.size() != 0){
-                if(cols.size() == columns.size()){
-                    std::vector<std::string>().swap(columns);
-                    for(std::string col: cols){
-                        columns.push_back(col);
-                    }
-                    index.push_back(row_num);
-                    internal_append_row(s, word, delimeter);
-                }else{
-                    throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
+            if(cols.size() == columns.size()){
+                std::vector<std::string>().swap(columns);
+                for(std::string col: cols){
+                    columns.push_back(col);
                 }
+                head = 0;
             }else{
-                while(std::getline(s, word, delimeter)){
-                columns.push_back(word);
-                }
+                throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
             }
-        }else if(row_num > head){
-            index.push_back(row_num);
+        }
+        if(row_num >= head){
+            index.push_back(row_num-head);
             internal_append_row(s, word, delimeter);
         }
         row_num++;
