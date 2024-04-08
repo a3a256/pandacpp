@@ -526,23 +526,23 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
     // CHANGE THE FOLLOWING LOOP!!!
     while(std::getline(fin, line)){
         std::stringstream s(line);
-        if(cols.size() != 0 && columns.size() == 0){
-            while(std::getline(s, word, delimeter)){
-                std::cout << word << ' '; // remove later
-                columns.push_back(word);
-            }
-            std::cout << '\n'; // remove later
-            if(cols.size() == columns.size()){
-                std::vector<std::string>().swap(columns);
-                for(std::string col: cols){
-                    columns.push_back(col);
-                }
-                std::cout << "columns added\n";
-                head = 0;
-            }else{
-                throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
-            }
-        }
+        // if(cols.size() != 0 && columns.size() == 0){
+        //     while(std::getline(s, word, delimeter)){
+        //         std::cout << word << ' '; // remove later
+        //         columns.push_back(word);
+        //     }
+        //     std::cout << '\n'; // remove later
+        //     if(cols.size() == columns.size()){
+        //         std::vector<std::string>().swap(columns);
+        //         for(std::string col: cols){
+        //             columns.push_back(col);
+        //         }
+        //         std::cout << "columns added\n";
+        //         head = 0;
+        //     }else{
+        //         throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
+        //     }
+        // }
         if(row_num >= head){
             std::cout << "row number " << row_num << '\n';
             index.push_back(row_num-head);
