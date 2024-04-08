@@ -440,7 +440,7 @@ class DataFrame{
             return true;
         }
 
-        void internal_append_row(std::stringstream &s, std::string word, char delim){
+        void internal_append_row(std::stringstream &s, std::string word, char delim, std::vector<std::string> &cols){
             int col = 0;
             std::vector<val_type> row;
             while(std::getline(s, word, delim)){
@@ -452,11 +452,22 @@ class DataFrame{
                 t.line = word;
                 // std::cout << word << ' ';
                 row.push_back(t);
-                std::cout << columns[col] << ' ';
-                temp_df[columns[col]].push_back(word);
-                col++;
+                std::cout << t.line << ' '; // to delete
+                // temp_df[columns[col]].push_back(word);
+                // col++;
             }
+            if(cols.size() != 0 && columns.size() == 0){
+                if(row.size() == cols.size()){
+                    columns = cols;
+                }else{
+                    throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
+                }
+            }
+            // this part needs to be amended in case no column names specified and header != 0
             std::cout << row.size() << '\n'; // the problem is with rows, the first row is empty
+            for(col=0; col<columns.size(); col++){
+                temp_df[columns[col]].push_back(row[col].line);
+            }
             values.push_back(row);
         }
 
@@ -517,21 +528,25 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
         std::stringstream s(line);
         if(cols.size() != 0 && columns.size() == 0){
             while(std::getline(s, word, delimeter)){
+                std::cout << word << ' '; // remove later
                 columns.push_back(word);
             }
+            std::cout << '\n'; // remove later
             if(cols.size() == columns.size()){
                 std::vector<std::string>().swap(columns);
                 for(std::string col: cols){
                     columns.push_back(col);
                 }
+                std::cout << "columns added\n";
                 head = 0;
             }else{
                 throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
             }
         }
         if(row_num >= head){
+            std::cout << "row number " << row_num << '\n';
             index.push_back(row_num-head);
-            internal_append_row(s, word, delimeter);
+            internal_append_row(s, word, delimeter, cols);
         }
         row_num++;
     }
