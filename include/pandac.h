@@ -450,9 +450,7 @@ class DataFrame{
                     t.num = std::stof(word);
                 }
                 t.line = word;
-                // std::cout << word << ' ';
                 row.push_back(t);
-                std::cout << t.line << ' '; // to delete
                 // temp_df[columns[col]].push_back(word);
                 // col++;
             }
@@ -463,8 +461,6 @@ class DataFrame{
                     throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
                 }
             }
-            // this part needs to be amended in case no column names specified and header != 0
-            std::cout << row.size() << '\n'; // the problem is with rows, the first row is empty
             for(col=0; col<columns.size(); col++){
                 temp_df[columns[col]].push_back(row[col].line);
             }
@@ -523,26 +519,8 @@ void DataFrame::read_csv(std::string path, char delimeter = ';', int head = 0, s
     fin.open(path, std::ios::in);
     std::string line, word;
     int row_num = 0;
-    // CHANGE THE FOLLOWING LOOP!!!
     while(std::getline(fin, line)){
         std::stringstream s(line);
-        // if(cols.size() != 0 && columns.size() == 0){
-        //     while(std::getline(s, word, delimeter)){
-        //         std::cout << word << ' '; // remove later
-        //         columns.push_back(word);
-        //     }
-        //     std::cout << '\n'; // remove later
-        //     if(cols.size() == columns.size()){
-        //         std::vector<std::string>().swap(columns);
-        //         for(std::string col: cols){
-        //             columns.push_back(col);
-        //         }
-        //         std::cout << "columns added\n";
-        //         head = 0;
-        //     }else{
-        //         throw std::invalid_argument("The amount of entered columns does not match the amount of columns in CSV file\n");
-        //     }
-        // }
         if(row_num >= head){
             std::cout << "row number " << row_num << '\n';
             index.push_back(row_num-head);
@@ -824,14 +802,11 @@ void DataFrame::sort_by(std::string column, bool ascending){
     for(i=0; i<columns.size(); i++){
         if(columns[i] == column){
             col_index = i;
-            std::cout << "found\n";
             break;
         }
     }
-    std::cout << values.size() << ", " << values[0].size() << '\n';
     // df[columns[col_index]].sort_values(ascending);
     std::sort(values.begin(), values.end(), Compare(col_index, ascending));
-    std::cout << "sorted\n";
     // std::vector<std::vector<val_type>> vals_extracted;
     // std::vector<val_type> temp;
     // std::vector<std::vector<float>> floats_extracted;
