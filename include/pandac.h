@@ -65,6 +65,9 @@ class Series{
         int nunique();
         std::map<val_type, int> value_counts();
 
+        // start testing and implementing cout overload operator for Series class
+        friend std::ostream& operator<<(std::ostream& os, const Series& dt);
+
 
     private:
         bool is_number(std::string x){
@@ -805,55 +808,7 @@ void DataFrame::sort_by(std::string column, bool ascending){
             break;
         }
     }
-    // df[columns[col_index]].sort_values(ascending);
     std::sort(values.begin(), values.end(), Compare(col_index, ascending));
-    // std::vector<std::vector<val_type>> vals_extracted;
-    // std::vector<val_type> temp;
-    // std::vector<std::vector<float>> floats_extracted;
-    // std::vector<float> ftemp;
-    // for(i=0; i<df[columns[0]].values.size(); i++){
-    //     for(j=0; j<columns.size(); j++){
-    //         if(columns[j] == column){
-    //             col_index = j;            
-    //         }
-    //         temp.push_back(df[columns[j]].values[i]);
-    //     }
-    //     vals_extracted.push_back(temp);
-    //     std::vector<val_type>().swap(temp);
-    // }
-
-    // bool sorted = false;
-    // while(!sorted){
-    //     sorted = true;
-    //     for(i=1; i<vals_extracted.size(); i++){
-    //         if(vals_extracted[i][col_index].isnum){
-    //             if(ascending){
-    //                 if(vals_extracted[i][col_index].num < vals_extracted[i-1][col_index].num){
-    //                     sorted = false;
-    //                     temp = vals_extracted[i];
-    //                     vals_extracted[i] = vals_extracted[i-1];
-    //                     vals_extracted[i-1] = temp;
-    //                 }
-    //             }else{
-    //                 if(vals_extracted[i][col_index].num > vals_extracted[i-1][col_index].num){
-    //                     sorted = false;
-    //                     temp = vals_extracted[i];
-    //                     vals_extracted[i] = vals_extracted[i-1];
-    //                     vals_extracted[i-1] = temp;
-    //                 }
-    //             }
-    //         }else{
-    //             if(vals_extracted[i][col_index].line < vals_extracted[i-1][col_index].line){
-    //                 sorted = false;
-    //                 temp = vals_extracted[i];
-    //                 vals_extracted[i] = vals_extracted[i-1];
-    //                 vals_extracted[i-1] = temp;
-    //             }
-    //         }
-    //     }
-    // }
-    // std::vector<val_type>().swap(temp);
-    // std::vector<float>().swap(ftemp);
     for(i=0; i<df[columns[0]].values.size(); i++){
         for(j=0; j<columns.size(); j++){
             df[columns[j]].values[i] = values[i][j];
