@@ -122,6 +122,27 @@ class Series{
         };
 };
 
+// implement to the end - not completed yet
+std::ostream& operator<<(std::ostream &os, const Series &dt){
+    int i, col_size;
+    col_size = INT_MIN;
+    for(i=0; i<dt.values.size(); i++){
+        col_size = std::max((int)dt.values[i].line.size(), col_size);
+    }
+    std::string line = "";
+    std::string val = "";
+    for(i=0; i<5; i++){
+        val = dt.values[i].line;
+        while(val.size() < col_size){
+            val = ' ' + val;
+        }
+        line += val + '\n';
+        std::string().swap(val);
+    }
+    os << line;
+    return os;
+}
+
 val_type Series::mode(){
     std::map<val_type, int> counts;
     int i, popularity;
