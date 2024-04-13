@@ -140,6 +140,12 @@ std::ostream& operator<<(std::ostream &os, const Series &dt){
         std::string().swap(val);
     }
     os << line;
+    if(dt.values[0].isnum){
+        os << "Type: numerical\n";
+    }else{
+        os << "Type: object\n";
+    }
+    os << "Name: " << dt.col_name << '\n';
     return os;
 }
 
