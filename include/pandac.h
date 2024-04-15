@@ -68,6 +68,7 @@ class Series{
         // start testing and implementing cout overload operator for Series class
         friend std::ostream& operator<<(std::ostream& os, const Series& dt);
         Series operator+(std::string const &obj);
+        Series operator+(int const &obj);
 
 
     private:
@@ -154,6 +155,18 @@ Series Series::operator+(std::string const& obj){
     std::vector<std::string> vals;
     for(i=0; i<values.size(); i++){
         vals.push_back(values[i].line+obj);
+    }
+    Series n;
+    n.to_series(vals, col_name);
+
+    return n;
+}
+
+Series Series::operator+(int const &obj){
+    int i;
+    std::vector<std::string> vals;
+    for(i=0; i<values.size(); i++){
+        vals.push_back(std::to_string(values[i].num+obj));
     }
     Series n;
     n.to_series(vals, col_name);
