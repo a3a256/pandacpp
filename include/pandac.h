@@ -73,6 +73,8 @@ class Series{
         Series operator+=(std::string const &obj);
         Series operator+=(int const &obj);
         Series operator+=(float const&obj);
+        Series operator-(int const&obj);
+        Series operator-(float const &obj);
 
 
     private:
@@ -202,6 +204,18 @@ Series Series::operator+=(int const &obj){
     return n;
 }
 
+Series Series::operator-(int const &obj){
+    int i;
+    std::vector<std::string> vals;
+    for(i=0; i<values.size(); i++){
+        vals.push_back(std::to_string((int)values[i].num-obj));
+    }
+    Series n;
+    n.to_series(vals, col_name);
+
+    return n;
+}
+
 Series Series::operator+(float const &obj){
     int i;
     std::vector<std::string> vals;
@@ -219,6 +233,18 @@ Series Series::operator+=(float const &obj){
     std::vector<std::string> vals;
     for(i=0; i<values.size(); i++){
         vals.push_back(std::to_string(values[i].num+obj));
+    }
+    Series n;
+    n.to_series(vals, col_name);
+
+    return n;
+}
+
+Series Series::operator-(float const &obj){
+    int i;
+    std::vector<std::string> vals;
+    for(i=0; i<values.size(); i++){
+        vals.push_back(std::to_string(values[i].num-obj));
     }
     Series n;
     n.to_series(vals, col_name);
