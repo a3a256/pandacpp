@@ -167,7 +167,7 @@ Series Series::operator+(std::string const& obj){
 
     return n;
 }
-
+// to change += operator function
 Series Series::operator+=(std::string const& obj){
     int i;
     std::vector<std::string> vals;
@@ -191,7 +191,7 @@ Series Series::operator+(int const &obj){
 
     return n;
 }
-
+// to change += operator
 Series Series::operator+=(int const &obj){
     int i;
     std::vector<std::string> vals;
@@ -230,14 +230,18 @@ Series Series::operator+(float const &obj){
 
 Series Series::operator+=(float const &obj){
     int i;
-    std::vector<std::string> vals;
+    val_type t;
+    float v;
+    std::string vs;
     for(i=0; i<values.size(); i++){
-        vals.push_back(std::to_string(values[i].num+obj));
+        v = values[i].num + obj;
+        t.num = v;
+        t.isnum = true;
+        t.line = std::to_string(v);
+        values[i] = t;
     }
-    Series n;
-    n.to_series(vals, col_name);
 
-    return n;
+    return *this;
 }
 
 Series Series::operator-(float const &obj){
