@@ -158,52 +158,70 @@ std::ostream& operator<<(std::ostream &os, const Series &dt){
 
 Series Series::operator+(std::string const& obj){
     int i;
-    std::vector<std::string> vals;
+    val_type t;
     for(i=0; i<values.size(); i++){
-        vals.push_back(values[i].line+obj);
+        if(values[i].isnum){
+            values[i].isnum = false;
+            values[i].num = -0.0f;
+        }
+        values[i].line += obj;
     }
-    Series n;
-    n.to_series(vals, col_name);
 
-    return n;
+    return *this;
 }
-// to change += operator function
+
 Series Series::operator+=(std::string const& obj){
     int i;
-    std::vector<std::string> vals;
+    val_type t;
     for(i=0; i<values.size(); i++){
-        vals.push_back(values[i].line+obj);
+        if(values[i].isnum){
+            values[i].isnum = false;
+            values[i].num = -0.0f;
+        }
+        values[i].line += obj;
     }
-    Series n;
-    n.to_series(vals, col_name);
 
-    return n;
+    return *this;
 }
 
 Series Series::operator+(int const &obj){
     int i;
-    std::vector<std::string> vals;
+    val_type t;
+    float val;
     for(i=0; i<values.size(); i++){
-        vals.push_back(std::to_string((int)values[i].num+obj));
+        if(values[i].isnum){
+            val = values[i].num + (float)obj;
+            t.isnum = true;
+            t.num = val;
+            t.line = std::to_string(val);
+            values[i] = t;
+        }else{
+            values[i].line += std::to_string(obj);
+        }
     }
-    Series n;
-    n.to_series(vals, col_name);
 
-    return n;
+    return *this;
 }
-// to change += operator
+
 Series Series::operator+=(int const &obj){
     int i;
-    std::vector<std::string> vals;
+    val_type t;
+    float val;
     for(i=0; i<values.size(); i++){
-        vals.push_back(std::to_string((int)values[i].num+obj));
+        if(values[i].isnum){
+            val = values[i].num + (float)obj;
+            t.isnum = true;
+            t.num = val;
+            t.line = std::to_string(val);
+            values[i] = t;
+        }else{
+            values[i].line += std::to_string(obj);
+        }
     }
-    Series n;
-    n.to_series(vals, col_name);
 
-    return n;
+    return *this;
 }
-
+// change minus operator
 Series Series::operator-(int const &obj){
     int i;
     std::vector<std::string> vals;
@@ -218,32 +236,34 @@ Series Series::operator-(int const &obj){
 
 Series Series::operator+(float const &obj){
     int i;
-    std::vector<std::string> vals;
-    for(i=0; i<values.size(); i++){
-        vals.push_back(std::to_string(values[i].num+obj));
-    }
-    Series n;
-    n.to_series(vals, col_name);
-
-    return n;
-}
-
-Series Series::operator+=(float const &obj){
-    int i;
     val_type t;
-    float v;
-    std::string vs;
     for(i=0; i<values.size(); i++){
-        v = values[i].num + obj;
-        t.num = v;
-        t.isnum = true;
-        t.line = std::to_string(v);
-        values[i] = t;
+        if(values[i].isnum){
+            values[i].num += obj;
+            values[i].line += std::to_string(values[i].num);
+        }else{
+            values[i].line += std::to_string(obj);
+        }
     }
 
     return *this;
 }
 
+Series Series::operator+=(float const &obj){
+    int i;
+    val_type t;
+    for(i=0; i<values.size(); i++){
+        if(values[i].isnum){
+            values[i].num += obj;
+            values[i].line += std::to_string(values[i].num);
+        }else{
+            values[i].line += std::to_string(obj);
+        }
+    }
+
+    return *this;
+}
+// change minus operator
 Series Series::operator-(float const &obj){
     int i;
     std::vector<std::string> vals;
