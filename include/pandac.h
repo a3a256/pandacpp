@@ -224,14 +224,21 @@ Series Series::operator+=(int const &obj){
 // change minus operator
 Series Series::operator-(int const &obj){
     int i;
-    std::vector<std::string> vals;
+    val_type t;
+    float val;
     for(i=0; i<values.size(); i++){
-        vals.push_back(std::to_string((int)values[i].num-obj));
+        if(values[i].isnum){
+            val = values[i].num - (float)obj;
+            t.isnum = true;
+            t.num = val;
+            t.line = std::to_string(val);
+            values[i] = t;
+        }else{
+            throw std::invalid_argument("Cannot substract int from string\n");
+        }
     }
-    Series n;
-    n.to_series(vals, col_name);
 
-    return n;
+    return *this;
 }
 
 Series Series::operator+(float const &obj){
@@ -266,14 +273,21 @@ Series Series::operator+=(float const &obj){
 // change minus operator
 Series Series::operator-(float const &obj){
     int i;
-    std::vector<std::string> vals;
+    val_type t;
+    float val;
     for(i=0; i<values.size(); i++){
-        vals.push_back(std::to_string(values[i].num-obj));
+        if(values[i].isnum){
+            val = values[i].num - (float)obj;
+            t.isnum = true;
+            t.num = val;
+            t.line = std::to_string(val);
+            values[i] = t;
+        }else{
+            throw std::invalid_argument("Cannot substract int from string\n");
+        }
     }
-    Series n;
-    n.to_series(vals, col_name);
 
-    return n;
+    return *this;
 }
 
 val_type Series::mode(){
