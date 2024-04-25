@@ -221,7 +221,7 @@ Series Series::operator+=(int const &obj){
 
     return *this;
 }
-// change minus operator
+
 Series Series::operator-(int const &obj){
     int i;
     val_type t;
@@ -270,7 +270,7 @@ Series Series::operator+=(float const &obj){
 
     return *this;
 }
-// change minus operator
+
 Series Series::operator-(float const &obj){
     int i;
     val_type t;
