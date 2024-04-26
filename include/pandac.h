@@ -75,6 +75,8 @@ class Series{
         Series operator+=(float const&obj);
         Series operator-(int const&obj);
         Series operator-(float const &obj);
+        Series operator++();
+        Series operator--();
 
 
     private:
@@ -222,6 +224,25 @@ Series Series::operator+=(int const &obj){
     return *this;
 }
 
+Series Series::operator++(){
+    int i;
+    val_type t;
+    float val;
+    for(i=0; i<values.size(); i++){
+        if(values[i].isnum){
+            val = values[i].num + 1.0f;
+            t.isnum = true;
+            t.num = val;
+            t.line = std::to_string(val);
+            values[i] = t;
+        }else{
+            throw std::invalid_argument("Cannot increment string by 1\n");
+        }
+    }
+
+    return *this;
+}
+
 Series Series::operator-(int const &obj){
     int i;
     val_type t;
@@ -235,6 +256,25 @@ Series Series::operator-(int const &obj){
             values[i] = t;
         }else{
             throw std::invalid_argument("Cannot substract int from string\n");
+        }
+    }
+
+    return *this;
+}
+
+Series Series::operator--(){
+    int i;
+    val_type t;
+    float val;
+    for(i=0; i<values.size(); i++){
+        if(values[i].isnum){
+            val = values[i].num - 1.0f;
+            t.isnum = true;
+            t.num = val;
+            t.line = std::to_string(val);
+            values[i] = t;
+        }else{
+            throw std::invalid_argument("Cannot increment string by 1\n");
         }
     }
 
