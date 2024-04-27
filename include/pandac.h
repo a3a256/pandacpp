@@ -43,6 +43,13 @@ struct val_type{
         }
         return line > other.line;
     }
+
+    bool operator==(const val_type& other) const{
+        if(isnum){
+            return num == other.num;
+        }
+        return line == other.line;
+    }
 };
 
 class Series{
