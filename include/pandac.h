@@ -84,6 +84,11 @@ class Series{
         Series operator-(float const &obj);
         Series operator++();
         Series operator--();
+        Series operator=(int const &obj);
+        Series operator=(float const &obj);
+        Series operator=(char const &obj);
+        Series operator=(char* const &obj);
+        Series operator=(std::string const &obj);
 
 
     private:
