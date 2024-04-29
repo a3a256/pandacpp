@@ -342,6 +342,62 @@ Series Series::operator-(float const &obj){
     return *this;
 }
 
+Series Series::operator=(int const &obj){
+    int i;
+    for(i=0; i<values.size(); i++){
+        values[i].isnum = true;
+        values[i].num = (float)obj;
+        values[i].line = std::to_string(values[i].num);
+    }
+
+    return *this;
+}
+
+Series Series::operator=(float const &obj){
+    int i;
+    for(i=0; i<values.size(); i++){
+        values[i].isnum = true;
+        values[i].num = obj;
+        values[i].line = std::to_string(values[i].num);
+    }
+
+    return *this;
+}
+
+Series Series::operator=(std::string const &obj){
+    int i;
+    for(i=0; i<values.size(); i++){
+        values[i].isnum = false;
+        values[i].line = obj;
+    }
+
+    return *this;
+}
+
+Series Series::operator=(char const &obj){
+    int i;
+    for(i=0; i<values.size(); i++){
+        values[i].isnum = false;
+        values[i].line = "";
+        values[i].line += obj;
+    }
+
+    return *this;
+}
+
+Series Series::operator=(char* const &obj){
+    int i, j;
+    for(i=0; i<values.size(); i++){
+        values[i].isnum = false;
+        values[i].line = "";
+        for(j=0; obj[j] != '\0'; j++){
+            values[i].line += obj[j];
+        }
+    }
+
+    return *this;
+}
+
 val_type Series::mode(){
     std::map<val_type, int> counts;
     int i, popularity;
