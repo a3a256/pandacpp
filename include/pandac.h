@@ -632,6 +632,9 @@ class DataFrame{
 
         std::map<std::string, int> value_counts(std::string col);
 
+        void operator[](std::string name);
+        void operator[](char* name);
+
 
     private:
 
@@ -768,7 +771,15 @@ class DataFrame{
         }
 };
 
-// RETURN
+// implement the following
+
+void DataFrame::operator[](std::string name){
+    return;
+}
+
+void DataFrame:: operator[](char* name){
+    return;
+};
 
 template <typename T> void DataFrame::to_dataframe(std::map<std::string, std::vector<T>> df_p){
     std::string line = "";
