@@ -774,6 +774,9 @@ class DataFrame{
 // implement the following
 
 void DataFrame::operator[](std::string name){
+    if(df.find(name) == df.end()){
+        continue;
+    }
     return;
 }
 
