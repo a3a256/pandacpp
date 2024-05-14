@@ -420,6 +420,23 @@ Series Series::operator*(int const &obj){
     return *this;
 }
 
+Series Series::operator*=(int const &obj){
+    int i, j;
+    val_type t;
+    for(i=0; i<values.size(); i++){
+        if(values[i].isnum){
+            values[i].num *= obj;
+            values[i].line += std::to_string(values[i].num);
+        }else{
+            for(j=1; j<obj; j++){
+                values[i].line += values[i].line;
+            }
+        }
+    }
+
+    return *this;
+}
+
 val_type Series::mode(){
     std::map<val_type, int> counts;
     int i, popularity;
