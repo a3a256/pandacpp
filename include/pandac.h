@@ -403,6 +403,8 @@ Series Series::operator=(char* const &obj){
     return *this;
 }
 
+// IMPLEMENTATION OF NULTIPLICATION OVERLOADING OPERATORS
+
 Series Series::operator*(int const &obj){
     int i, j;
     val_type t;
@@ -431,6 +433,36 @@ Series Series::operator*=(int const &obj){
             for(j=1; j<obj; j++){
                 values[i].line += values[i].line;
             }
+        }
+    }
+
+    return *this;
+}
+
+Series Series::operator*(float const &obj){
+    int i, j;
+    val_type t;
+    for(i=0; i<values.size(); i++){
+        if(values[i].isnum){
+            values[i].num *= obj;
+            values[i].line += std::to_string(values[i].num);
+        }else{
+            throw std::invalid_argument("Could not multiply float with string\n");
+        }
+    }
+
+    return *this;
+}
+
+Series Series::operator*=(float const &obj){
+    int i, j;
+    val_type t;
+    for(i=0; i<values.size(); i++){
+        if(values[i].isnum){
+            values[i].num *= obj;
+            values[i].line += std::to_string(values[i].num);
+        }else{
+            throw std::invalid_argument("Could not multiply float with string\n");
         }
     }
 
