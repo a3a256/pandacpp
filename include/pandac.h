@@ -149,6 +149,8 @@ class Series{
         };
 };
 
+// IMPLEMENTATION OF OUTPUT OVERLOAD OPERATOR <<
+
 std::ostream& operator<<(std::ostream &os, const Series &dt){
     int i, col_size;
     col_size = INT_MIN;
@@ -174,6 +176,8 @@ std::ostream& operator<<(std::ostream &os, const Series &dt){
     os << "Name: " << dt.col_name << '\n';
     return os;
 }
+
+// IMPLEMENTATION OF ONCREMENT OVERLOAD OPERATOR
 
 Series Series::operator+(std::string const& obj){
     int i;
@@ -241,6 +245,8 @@ Series Series::operator+=(int const &obj){
     return *this;
 }
 
+// IMPLEMENTATION OF ++ OVERLOAD OPERATOR
+
 Series Series::operator++(){
     int i;
     val_type t;
@@ -259,6 +265,8 @@ Series Series::operator++(){
 
     return *this;
 }
+
+// IMPLEMENTATION OF - OVERLOAD OPERATOR SUBTRACTING INTEGER
 
 Series Series::operator-(int const &obj){
     int i;
@@ -279,6 +287,8 @@ Series Series::operator-(int const &obj){
     return *this;
 }
 
+// IMPLEMENTATION OF -- OVERLOAD OPERATOR
+
 Series Series::operator--(){
     int i;
     val_type t;
@@ -297,6 +307,8 @@ Series Series::operator--(){
 
     return *this;
 }
+
+// IMPLEMENTATION OF ADDITION OVERLOAD OPERATORS ADDING FLOAT
 
 Series Series::operator+(float const &obj){
     int i;
@@ -328,6 +340,8 @@ Series Series::operator+=(float const &obj){
     return *this;
 }
 
+// IMPLEMENTATION OF ADDITION OVERLOAD OPERATORS decreasing values by FLOAT value
+
 Series Series::operator-(float const &obj){
     int i;
     val_type t;
@@ -346,6 +360,8 @@ Series Series::operator-(float const &obj){
 
     return *this;
 }
+
+// IMPLEMENTATION OF ASSIGNMENT OVERLOAD OPERATORS
 
 Series Series::operator=(int const &obj){
     int i;
