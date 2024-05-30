@@ -95,6 +95,12 @@ class Series{
         Series operator*(float const &obj);
         Series operator*=(float const &obj);
 
+        // implement division operator
+        Series operator/(int const &obj);
+        Series operator/=(int const &obj);
+        Series operator/(float const &obj);
+        Series operator/=(float const &obj);
+
 
     private:
         bool is_number(std::string x){
