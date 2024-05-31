@@ -426,6 +426,7 @@ Series Series::operator=(char* const &obj){
 }
 
 // IMPLEMENTATION OF NULTIPLICATION OVERLOADING OPERATORS
+// amend values.line
 
 Series Series::operator*(int const &obj){
     int i, j;
@@ -476,15 +477,62 @@ Series Series::operator*(float const &obj){
     return *this;
 }
 
+// IMPLEMENTATION OF DIVISION OVERLOAD OPERATOR
+
+Series Series::operator/(int const &obj){
+    int i, j;
+    val_type t;
+    for(i=0; i<values.size(); i++){
+        if(values[i].isnum){
+            values[i].num /= obj;
+            values[i].line += std::to_string(values[i].num);
+        }else{
+            throw std::invalid_argument("Could not divide int by string value\n");
+        }
+    }
+
+    return *this;
+}
+
+Series Series::operator/=(int const &obj){
+    int i, j;
+    val_type t;
+    for(i=0; i<values.size(); i++){
+        if(values[i].isnum){
+            values[i].num /= obj;
+            values[i].line = std::to_string(values[i].num);
+        }else{
+            throw std::invalid_argument("Could not divide int by string value\n");
+        }
+    }
+
+    return *this;
+}
+
+Series Series::operator/(float const &obj){
+    int i, j;
+    val_type t;
+    for(i=0; i<values.size(); i++){
+        if(values[i].isnum){
+            values[i].num /= obj;
+            values[i].line = std::to_string(values[i].num);
+        }else{
+            throw std::invalid_argument("Could not divide float by string value\n");
+        }
+    }
+
+    return *this;
+}
+
 Series Series::operator*=(float const &obj){
     int i, j;
     val_type t;
     for(i=0; i<values.size(); i++){
         if(values[i].isnum){
-            values[i].num *= obj;
+            values[i].num /= obj;
             values[i].line += std::to_string(values[i].num);
         }else{
-            throw std::invalid_argument("Could not multiply float with string\n");
+            throw std::invalid_argument("Could not divide float by string value\n");
         }
     }
 
