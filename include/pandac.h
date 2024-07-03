@@ -913,11 +913,10 @@ class DataFrame{
 };
 
 // implement the following
+// questionable part - yet to test or remove
 
 void DataFrame::operator[](std::string name){
-    if(df.find(name) == df.end()){
-        continue;
-    }
+    std::cout << df[name];
     return;
 }
 
